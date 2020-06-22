@@ -1,0 +1,294 @@
+\section*{Lezione 3}
+\addcontentsline{toc}{section}{Lezione 3}
+
+\subsection*{Codici pesati}
+\addcontentsline{toc}{subsection}{Codici pesati}
+Dato un messaggio da spedire nel canale, si associa ad esso un insieme di valori.
+Ad esempio, dato un messaggio $m = m_1 \; m_2 \; ... \; m_n$, codifichiamo ogni $m_i$ nel seguente modo:
+\begin{center}
+	26 lettere A-Z\\
+	1 spazio \textvisiblespace\\
+	10 cifre 0-9\\
+	$\downarrow$\\
+	37 simboli
+\end{center}
+
+Successivamente si associa ad ogni messaggio un insieme di valori di \textit{peso}:
+
+\begin{center}
+	 msg: $m_1, \; m_2, \; ... \; m_n, \; c$\\
+	 pes: $n+1, \; n, ... \; 2, \; 1 $
+\end{center}
+
+Facciamo un esempio, mettiamo di voler spedire la parola \texttt{ciao}, utilizzando la codifica mostrata in precedenza.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{llllll}
+		& \texttt{C} & \texttt{I} & \texttt{A} & \texttt{O}  & check \\
+		\hline
+		msg & 2 & 8 & 0 & 14 & check \\
+		pes & 5 & 4 & 3 & 2  & 1    
+	\end{tabular}
+\end{table}
+
+Il mittente pesa ogni carattere molitplicando la codifica per il peso:
+
+\begin{equation*}
+	2 \cdot 5 + 8 \cdot 4 + 0 \cdot 3 + 14 \cdot 2 + check \cdot 1
+\end{equation*}
+
+Succcessivamente si pone questa espressione uguale a 0 \textit{mod} 37 (questo è il numero totale di caratteri).
+
+\begin{equation*}
+2 \cdot 5 + 8 \cdot 4 + 0 \cdot 3 + 14 \cdot 2 + check \cdot 1 = 0 \; mod \; 37
+\end{equation*}
+\begin{equation*}
+70 + check = 0 \; mod \; 36
+\end{equation*}
+\begin{equation*}
+check = 4
+\end{equation*}
+
+Successivamente spedisce il messaggio con il vettore dei pesi.\\
+Il ricevitore si calcola il peso (usando il valore di \textit{check} spedito dal mittente) e controlla che il peso sia uguale a 0 \textit{mod} 37.
+
+Da notare che 37 è primo, quindi ci va bene perchè lavoriamo in un campo.\\
+Ad esempio i conti in modulo 6 hanno i divisori di zero (3 $\cdot$ 2 = 0 mod 6).
+Se non è primo piuttosto aumentiamo il numero di caratteri (piuttosto non li usiamo, ma ci semplifica tutto avere un numero primo).
+
+I codici pesati sono utili per individuare errori come ad esempio lo scambio di caratteri, l'inserimento di caratteri da parte del canale ecc...
+
+\medskip
+
+Ad esempio, se all'interno di un messaggio al posto di \texttt{ab} viene inviato \texttt{ba}, allora la differenza fra le somme pesate è (fissato \textit{k+1} come peso di \texttt{a}, \textit{k} come peso di \texttt{b}).
+
+\begin{equation*}
+a(k+1)+bk \rightarrow b(k+1)+ak
+\end{equation*}
+\begin{equation*}
+a(k+1)+bk - b(k+1)+ak = 
+\end{equation*}
+\begin{equation*}
+= b(k+1)+ak - a(k+1) -bk
+\end{equation*}
+\begin{equation*}
+= bk +b+ak-ak-a-bk
+\end{equation*}
+\begin{equation*}
+= b-a
+\end{equation*}
+
+Quindi il messaggio viene accettato solo se la differenza è uguale a 0, quindi quando $b-a = 0 \; mod \; 37$, ma per essere 0 allora i due caratteri devono essere uguali.
+Se due simboli uguali vengono scambiati quindi, il messaggio viene accettato lo stesso.
+
+Vediamo un algoritmo per calcolare i pesi:
+
+\begin{algorithm}
+	\begin{algorithmic}[1]
+		\Procedure{CalcolaCheckDigit}{}
+		\State $\textit{sum} \gets 0$
+		\State $\textit{ssum} \gets 0$
+		\While{\textit{not} EOF}
+		\State read $\textit{symbol}$
+		\State $sum \gets sum + \textit{symbol} \; \text{mod} \; 37$
+		\State $ssum \gets ssum + \textit{sum} \; \text{mod} \; 37$
+		\EndWhile
+		\State $temp \gets ssum + sum \; \text{mod} \; 37$
+		\State $c \gets 37 - temp \; \text{mod} \; 37$
+		\State return $c$
+		\EndProcedure
+	\end{algorithmic}
+\end{algorithm}
+
+Una simulazione dell algoritmo con la parola \texttt{ciao} è la seguente:
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{l|l|l}
+		msg & sum & ssum   \\
+		\hline
+		\texttt{C} = 2  & 2   & 2      \\
+		\texttt{I} = 8  & 10  & 12     \\
+		\texttt{A} = 0  & 10  & 22     \\
+		\texttt{O} = 14 & 24  & 46 $\equiv$ 9
+	\end{tabular}
+\end{table}
+\vspace{-5mm}
+\begin{equation*}
+temp \leftarrow 9 + 24 \equiv 33\\
+\end{equation*}
+\begin{equation*}
+c \gets 37 - 33 = 4 \equiv \texttt{E}
+\end{equation*}
+
+\medskip
+
+Quindi il messaggio spedito sarà \texttt{ciaoe}.
+
+\newpage
+
+Il ricevente ricalcolerà la tabella usando il messaggio appena arrivato:
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{l|l|l}
+		msg & sum & ssum   \\
+		\hline
+		\texttt{C} = 2   & 2   & 2      \\
+		\texttt{I} = 8   & 10  & 12     \\
+		\texttt{A} = 0   & 10  & 22     \\
+		\texttt{O} = 14   & 24  & 46 $\equiv$ 9 \\
+		\texttt{E} = 4  & 28  & 37 $\equiv$ \textbf{0}
+	\end{tabular}
+\end{table}
+
+La somma delle somme finale è 0, quindi il messaggio è ok. Se non fosse 0, allora il messaggio è stato modificato, ma non posso sapere dove.
+
+Astraiamo il procedimento appena utilizzato:
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{l|l|l}
+		msg & sum & ssum   \\
+		\hline
+		\texttt{w}  & $w$   & 2      \\
+		\texttt{x}  & $w+x$  & $2w+$x     \\
+		\texttt{y}  & $w+x+y$ & $3w+2x+y$    \\
+		\texttt{z}  & $w+x+y+z$  & $4w+3x+2y+z$ \\
+		\texttt{c}  & $w+x+y+z+c$  & $5w+4x+3y+2z+c \equiv 0 \; mod \; 37$ 
+	\end{tabular}
+\end{table}
+
+Si noti come la somma delle somme assegna un peso decrescente a tutti i caratteri: 5 a \textit{w}, 4 a \textit{x} e così via...
+
+Il codice ISBN è un esempio di codice pesato su base 11; proviamo a verificare il seguente codice: 1-58488-508-4
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{l|l|l}
+		msg & sum & ssum   \\
+		\hline
+		\texttt{1}  & 1   & 1      \\
+		\texttt{5}  & 6  & 7     \\
+		\texttt{8}  & $14 \equiv 3$ & 10   \\
+		\texttt{4}  & $7$  & $17 \equiv 6$ \\
+		\texttt{8}  & $15 \equiv 4$  & 10 \\
+		\texttt{8}  & $12 \equiv 1$  & $11 \equiv 0$ \\
+		\texttt{5}  & $6$  & 6 \\
+		\texttt{0}  & $6$  & $12 \equiv 1$ \\
+		\texttt{8}  & $14 \equiv 3$  & 4 \\
+		\hline
+		\texttt{4}  & $7$  & $11 \; mod \; 11 \equiv \textbf{0}$ \\
+	\end{tabular}
+\end{table}
+
+Quindi il codice è corretto. Nel caso l'ultima cifra fosse un 10 si inserisce una \texttt{x}.
+
+\newpage 
+\subsection*{Es. 2.4 - 1, pag.24}
+Caso: rumore bianco\\
+$p=0.001$ (probabilità errore in ogni posizione)\\
+$n=100$ (dimensione pacchetto)\\
+
+Quanto è la probabilità che ci siano 0 errori?
+
+\begin{equation*}
+p(\text{0 errori}) = (1-p)^n
+\end{equation*}
+\begin{equation*}
+= (1-\frac{1}{1000})^{100}
+\end{equation*}
+\begin{equation*}
+= e^{100 \cdot ln(1 - \frac{1}{1000})}
+\end{equation*}
+\begin{equation*}
+\approx e^{100 \cdot ln(-\frac{1}{1000})}
+\end{equation*}
+\begin{equation*}
+= e^{-\frac{1}{10}}
+\end{equation*}
+
+\subsection*{Es. 2.4 - 2, pag.25}
+Caso: rumore bianco\\
+$p=0.001$ (probabilità errore in ogni posizione)\\
+$n=100$ (dimensione pacchetto)\\
+
+Quanto è la probabilità di non riuscire ad individuare un errore?
+
+Per rispondere a questa domanda, possiamo rispondere a: quanto è la probabilità che il controllo di errore singolo sbagli?
+
+Ricordando l'equazione (23):
+
+\begin{equation*}
+p(\text{controllo parità fallisce}) = \frac{1 + (1-2p)^n}{2}-(1-p)^n
+\end{equation*}
+\begin{equation*}
+= \frac{1 + (1-\frac{2}{1000})^{100}}{2}-(1-\frac{1}{1000})^{100}
+\end{equation*}
+\begin{equation*}
+\approx 0.0045
+\end{equation*}
+
+\subsection*{Codici a correzione d'errore}
+I codici a correzione d'errore, a differenza del controllo di parità, permette al ricevente di rilevare dove è avvenuto un errore ed eventualmente di correggerlo.
+Questo ovviamente richiede di aggiungere delle cifre di controllo ulteriori.
+
+\newpage
+\subsubsection*{Codici rettangolari - 1 Errore}
+Il messaggio inserito nel canale viene rappresentato come un rettangolo (logicamente parlando, non fisicamente).
+Rappresentiamo i bit di messaggio in questo modo:
+\medskip
+\begin{equation*}
+\begin{matrix}
+\textit{o} & \textit{o} & \textit{o} & ... & \textit{o} & x\\
+\textit{o} & \textit{o} & \textit{o} & ... & \textit{o} & x\\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots\\
+\textit{o} & \textit{o} & \textit{o} & ... & \textit{o} & x\\
+x & x & x & ... & x & 
+\end{matrix}
+\end{equation*}
+Nell'esempio il carattere \textit{o} rappresenta un bit di messaggio, \textit{x} rappresenta un carattere di controllo.
+Ogni cifra di controllo sulle righe codifica la riga corrispondente, quelle sulle colonne codificano la colonna.
+
+In questo modo, se un bit di messaggio viene modificato, posso individuare subito l'errore in quanto verranno sbagliati i bit di controllo sulla relativa riga e colonna.
+Ad esempio, se un bit in posizione $i, j$ viene alterato, allora i due controlli di parità sulla riga $i$ e sulla colonna $j$ falliranno, ma il ricevente intuisce subito quale bit ha subito modifiche.\\
+
+Per capire quanto il metodo è efficiente, andiamo a calcolarne la ridondanza:
+
+\begin{equation}
+R = \frac{m \cdot n}{(m-1)(n-1)}
+\end{equation}
+\begin{equation*}
+= 1 + \frac{1}{m-1} + \frac{1}{n-1} + \frac{1}{(m-1)(n-1)}
+\end{equation*}
+
+Quindi l'eccesso di ridondanza equivale a $\frac{1}{m-1} + \frac{1}{n-1} + \frac{1}{(m-1)(n-1)}$.\\
+Quanto è l'eccesso di ridondanza più piccola possibile in questa classe di codici (codici rettangolari)?
+L'idea è quella di minimizzare la funzione
+\begin{equation*}
+\frac{1}{m-1} + \frac{1}{n-1} + \frac{1}{(m-1)(n-1)}
+\end{equation*}
+Si dovrebbero quindi calcolare le derivate parziali rispetto a \textit{n} e a \textit{m} e vedere quando si annullano, ma è facilmente intuibile che questa quantità è la minore possibile quando $m=n$.
+
+Per cui i più efficienti sono i codici \textbf{quadrati}, ovvero il sottoinsieme di codici rettangolari in cui il numero di righe è uguale al numero di colonne.
+
+La loro ridondanza vale
+\begin{equation*}
+R = \frac{n^2}{(n-1)^2} = 1 + \frac{2}{n-1} + \frac{1}{(n-1)^2}
+\end{equation*}
+
+I peggiori invece, sono i codici con una singola riga (i bit di controllo sono di più dei bit di messaggio!)
+
+
+
+
+
+
+
+
+
+
+
+
+
