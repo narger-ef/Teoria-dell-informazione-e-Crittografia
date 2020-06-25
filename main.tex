@@ -12,9 +12,24 @@
 
 \usepackage{lmodern}
 
-\usepackage{tcolorbox}
+\usepackage{empheq}
 
 \newtheorem{theorem}{Teorema}
+
+\usepackage{caption}
+
+\usepackage{mathrsfs}
+
+\usepackage[most]{tcolorbox}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat = newest}
+
+\newtcbox{\mymath}[1][]{%
+	nobeforeafter, math upper, tcbox raise base,
+	enhanced, colframe=blue!30!black,
+	colback=blue!30, boxrule=1pt,
+	#1}
 
 \newtheorem{dimostrazione}{Dimostrazione}
 
@@ -35,6 +50,10 @@
 
 \setlength{\columnseprule}{0.3pt}
 \def\columnseprulecolor{\color{black}}
+
+\newenvironment{Figure}
+{\par\medskip\noindent\minipage{\linewidth}}
+{\endminipage\par\medskip}
 
 \title{Teoria dell'informazione e crittografia\\ \vspace{3mm} \large{Riassunto videolezioni}}
 \author{}
@@ -62,5 +81,9 @@
 \input{lezione7}
 \newpage
 \input{lezione8}
+\newpage
+\input{lezione9}
+\newpage
+\input{lezione10}
 
 \end{document}
