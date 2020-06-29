@@ -1,0 +1,252 @@
+\section*{Lezione 12}
+\addcontentsline{toc}{section}{Lezione 12}
+
+Riprendendo le probabilità all'indietro di prima:
+
+\begin{equation*}
+p(a=0|b=0) = \frac{pP}{pP+Q(1-p)}
+\end{equation*}
+\begin{equation*}
+p(a=1|b=1) = \frac{P(1-p)}{pQ+P(1-p)}
+\end{equation*}
+\begin{equation*}
+p(a=1|b=0) = \frac{Q(1-p)}{pP+Q(1-p)}
+\end{equation*}
+\begin{equation*}
+p(a=0|b=1) = \frac{pQ}{pQ+P(1-p)}
+\end{equation*}
+
+Vediamo un esempio: $P=\frac{9}{10}$, $Q = 1-P = \frac{1}{10}$. L'utente digita con probabilità $\frac{19}{20}$ il bit 0, mentre con $\frac{1}{20}$ il bit 1.
+Quindi:
+\begin{equation*}
+p(a=0) = \frac{19}{20}
+\end{equation*}
+\begin{equation*}
+p(a=1) = \frac{1}{20}
+\end{equation*}
+
+Vediamo le probabilità all'indietro, quindi come il ricevente deve interpretare il messaggio:
+
+\begin{equation*}
+p(a=0\,|\,b=0) = \frac{171}{172}
+\end{equation*}
+\begin{equation*}
+p(a=1\,|\,b=1) = \frac{9}{28}
+\end{equation*}
+\begin{equation*}
+p(a=1\,|\,b=0) = \frac{1}{172}
+\end{equation*}
+\begin{equation*}
+p(a=0\,|\,b=1) = \frac{19}{28}
+\end{equation*}
+
+Quindi se il ricevente ha inviato 0 confronta le probabilità che il mittente abbia inviato effettivamente 0 oppure 1:
+
+\begin{equation*}
+p(a=0\,|\,b=0) = \frac{171}{172} \; \; \; vs \; \; \; p(a=1\,|\,b=0) = \frac{1}{172}
+\end{equation*}
+
+Domina la probabilità che abbia inviato 0, quindi leggo il messaggio proprio come 0.\\
+Ora mettiamo che arrivi un 1:
+
+\begin{equation*}
+p(a=0\,|\,b=1) = \frac{19}{28} \; \; \; vs \; \; \; p(a=1\,|\,b=1) = \frac{9}{28}
+\end{equation*}
+
+La probabilità che abbia inviato 0 è ancora più alta! Quindi il mittente leggerà sempre 0!\\
+Come mai succede questo?\\
+Il problema è che
+
+\begin{equation*}
+\begin{cases}
+p(a=0\,|\,b=0) > p(a=1\,|\,b=1)\\
+p(a=0\,|\,b=1) > p(a=1\,|\,b=0)\\
+\end{cases}
+\end{equation*}
+\begin{equation*}
+\begin{cases}
+Pp > Q(1-p)\\
+Qp > P(1-p)
+\end{cases}
+\end{equation*}
+\begin{equation*}
+\begin{cases}
+Pp > (1-P)(1-p)\\
+Qp > P(1-p)
+\end{cases}
+\end{equation*}
+\begin{equation*}
+\begin{cases}
+\cancel{Pp} > 1 - P + \cancel{Pp} - p\\
+Qp > P(1-p)
+\end{cases}
+\end{equation*}
+\begin{equation*}
+\begin{cases}
+0 > 1 - P - p\\
+Qp > P(1-p)
+\end{cases}
+\end{equation*}
+\begin{equation*}
+\begin{cases}
+0 > 1 - P - p\\
+\cancel{(1-p)}p > P\cancel{(1-p)}
+\end{cases}
+\end{equation*}
+\begin{equation*}
+\begin{cases}
+p > 1 - P\\
+p > P
+\end{cases}
+\end{equation*}
+\begin{equation*}
+\begin{cases}
+p > Q\\
+p > P
+\end{cases}
+\end{equation*}
+
+Il problema qui è che l'utente ha utilizzato una distribuzione di probabilità per i simboli molto diversa dalla distribuzione uniforme.
+
+\subsection*{Entropia congiunta}
+\addcontentsline{toc}{subsection}{Entropia congiunta}
+
+Possiamo vedere l'uscita del canale come se fosse una sorgente, quindi posso chiedermi quanto vale la quantità di informazione relativa a $b_j$ e rispetto a $a_i$, e quale rapporto c'è fra le due?\\ 
+Ci sono quindi tre punti di vista: vedo solo $A$, vedo solo $B$ o le vedo entrambe e mi chiedo in che rapporto sono.
+
+\smallskip
+Partendo da $A$:
+
+\begin{equation*}
+H_r(A) = \sum_{i=1}^qp(a_i)\log_r\frac{1}{p(a_i)}
+\end{equation*}
+
+possiamo quindi scrivere anche $B$:
+
+\begin{equation*}
+H_r(B) = \sum_{j=1}^sp(b_j)\log_r\frac{1}{p(b_j)}
+\end{equation*}
+
+Dunque si può anche scrivere una entropia condizionata: un entropia sui simboli di $A$ dato che dal canale è uscito un simbolo $b_j$.
+
+\begin{equation*}
+H_r(A|b_j) = \sum_{i=1}^qp(a_i\,|\,b_j)\log_r\frac{1}{p(a_i\,|\,b_j)}
+\end{equation*}
+
+Allo stesso modo posso anche calcolare $H_r(A|B)$, che rappresenta la quantità di informazione che mediamente è uscita dal canale dato che ho visto uscire uno qualsiasi dei simboli di $B$
+
+\begin{equation*}
+H_r(A|B) = \sum_{j=1}^sp(b_j)H_r(A\,|\,b_j)
+\end{equation*}
+
+\begin{empheq}[box=\tcbhighmath]{equation*}
+H_r(A|B) = \sum_{j=1}^s\sum_{i=1}^qp(a_i,b_j)\log_r\frac{1}{p(a_i\,|\,b_j)}
+\end{empheq}
+
+Questa quantità viene detta \textbf{equivocazione}.
+
+Ora vediamo dall'altro verso, posso quindi considerare $H(B\,|\,a_i)$ quindi una quantità di informazione media su $B$ dato che so che è stato inserito un simbolo $a_i$ nel canale.
+
+\begin{equation*}
+H_r(B|a_i) = \sum_{j=1}^sp(b_j\,|\,a_i)\log_r\frac{1}{p(b_j\,|\,a_i)}
+\end{equation*}
+
+Quindi ora come prima facciamo una media pesata (questa volta sugli $a_i$):
+
+\begin{empheq}[box=\tcbhighmath]{equation*}
+H_r(B|A) = \sum_{i=1}^q\sum_{j=1}^sp(a_i,b_j)\log_r\frac{1}{p(b_j\,|\,a_i)}
+\end{empheq}
+
+L'ultima entropia da definire è l'entropia congiunta:
+
+\begin{empheq}[box=\tcbhighmath]{equation*}
+H_r(A,B) = \sum_{i=1}^q\sum_{j=1}^sp(a_i,b_j)\log_r\frac{1}{p(a_i,b_j)}
+\end{empheq}
+
+Vediamo ora diversi casi sulle probabilità:
+
+\begin{itemize}
+	\item $p(a_i,b_j)=p(a_i)p(b_j)$   $\forall i, j$\\
+	Questo accade solo quando le due probabilità sono indipendenti, quindi quando inserire $a_i$ non influenza l'uscita di $b_j$, cosa che avviene solo nei canali completamente rumorosi.\\
+	In questo caso l'entropia congiunta diventa:
+	\begin{equation*}
+	H_r(A,B) = \sum_{i=1}^q\sum_{j=1}^sp(a_i)p(b_j)\log_r\frac{1}{p(a_i)p(b_j)}
+	\end{equation*}
+	\begin{equation*}
+	H_r(A,B) = \sum_{i=1}^q\sum_{j=1}^sp(a_i)p(b_j)[\log_r\frac{1}{p(a_i)} +  \log_r\frac{1}{p(b_j)}]
+	\end{equation*}
+	\begin{equation*}
+	H_r(A,B) = \sum_{j=1}^sp(b_j)\sum_{i=1}^qp(a_i)\log_r\frac{1}{p(a_i)} +
+	\sum_{i=1}^qp(a_i)\sum_{j=1}^sp(b_j)\log_r\frac{1}{p(b_j)}
+	\end{equation*}
+	\begin{equation*}
+	H_r(A,B) = 1 \cdot H_r(A) +
+	1 \cdot H_r(B)
+	\end{equation*}
+	Quindi nel caso di canale completamente rumoroso ho che l'entropia congiunta $H_r(A,B)$ che è la quantità di informazione media che ottengo guardando contemporaneamente la sorgente $A$ e la sorgente $B$ (terzo punto di vista di prima).
+	
+    \item $p(a_i, b_j)=p(a_i)p(b_j\,|\,a_i)$   $\forall i, j$\\
+    Questo è il caso 'normale', quindi c'è rumore bianco:
+    \begin{equation*}
+	H_r(A,B) = \sum_{i=1}^q\sum_{j=1}^sp(a_i,b_j)\log_r\frac{1}{p(a_i)}+\sum_{i=1}^q\sum_{j=1}^sp(a_i,b_j)\log_r\frac{1}{p(b_j|a_i)}
+    \end{equation*}
+    Ora sfruttiamo una proprietà statistica per cui:
+    \begin{equation*}
+    \sum_{j=1}^sp(a_i, b_j) = p(a_i)
+    \end{equation*}
+    Questa proprietà si chiama \textit{marginale} di $a_i$.
+    Quindi proseguo in questo modo:
+    \begin{center}
+    	... conti ...
+	    \end{center}
+	\begin{empheq}[box=\tcbhighmath]{equation*}
+	H_r(A,B) = H_r(A) + H_r(B|A)
+	\end{empheq}
+	Quindi la somma della quantità di informazione effettivamente inserita nel canale più l'equivocazione. Quest'ultima agisce come rumore.
+	Se non ci fosse rumore l'entropia $H_r(A,B) = H_r(A)$.
+\end{itemize}
+C'è una simmetria in tutte queste formule fra $A$ e $B$, scambiandoli i risultati non cambiano, infatti possiamo esprimere l'entropia congiunta anche in questo modo:
+\begin{equation*}
+H_r(A,B) = H_r(B) + H_r(A|B)
+\end{equation*}
+
+\subsection*{Mutua informazione}
+\addcontentsline{toc}{subsection}{Mutua informazione}
+Quanto è la quantità di informazione che viene trasmessa all'interno del canale? Quella che viene trasmessa dall'inizio alla fine del canale. In altre parole la quantità di informazione massima che un canale può trasportare.
+Questa caratteristica non dipende da come l'utente usa il canale ma è una caratteristica intrinseca dello stesso. Essa però non potrà mai superare la capacità del canale.
+\begin{equation*}
+I(a_i;b_j) = \log_r\frac{1}{p(a_i)} - \log_r\frac{1}{p(a_i\,|\,b_j)} = \log_r\frac{p(a_i\,|\,b_j)}{p(a_i)}
+\end{equation*}
+
+\begin{equation*}
+= \log_r\frac{p(a_i\,|\,b_j)\cdotp(b_j))}{p(a_i)\cdot p(b_j)} =  \log_r\frac{p(a_i,b_j)}{p(a_i)\cdot p(b_j)} 
+\end{equation*}
+
+Inoltre 
+
+\begin{equation*}
+= I(a_i;b_j) \leq I(a_i) = \log_r\frac{1}{p(a_i)}
+\end{equation*}
+
+Questo perchè
+
+\begin{equation*}
+= I(a_i;b_j) = log_r\frac{p(a_i\,|\,b_j)}{p(a_i)} = log_rp(a_i\,|\,b_j) + I(a_i)
+\end{equation*}
+
+$p(a_i\,|\,b_j) \leq 1 $ e il logaritmo di un valore $\leq 1$ è negativo, quindi sto riducendo il valore.
+
+Se le distribuzioni di probabilità di $a_i$ e $b_j$ sono indipendenti, allora $I(a_i;b_j) = 0$ visto che nelle equazioni di prima questo termine:
+
+\begin{equation*}
+\log_r\frac{p(a_i\,|\,b_j)}{p(a_i)\cdot p(b_j)}
+\end{equation*}
+
+si annulla
+
+
+
+
+
+
+ 
