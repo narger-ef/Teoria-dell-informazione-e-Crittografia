@@ -143,7 +143,7 @@ H_r(A|B) = \sum_{j=1}^sp(b_j)H_r(A\,|\,b_j)
 H_r(A|B) = \sum_{j=1}^s\sum_{i=1}^qp(a_i,b_j)\log_r\frac{1}{p(a_i\,|\,b_j)}
 \end{empheq}
 
-Questa quantità viene detta \textbf{equivocazione}.
+Questa quantità viene detta \textbf{equivocazione}. Essa rappresenta l'effetto del rumore nel canale, un legame statistico fra i simboli di $A$ e i simboli di $B$ che escono
 
 Ora vediamo dall'altro verso, posso quindi considerare $H(B\,|\,a_i)$ quindi una quantità di informazione media su $B$ dato che so che è stato inserito un simbolo $a_i$ nel canale.
 
@@ -242,9 +242,121 @@ Se le distribuzioni di probabilità di $a_i$ e $b_j$ sono indipendenti, allora $
 \log_r\frac{p(a_i\,|\,b_j)}{p(a_i)\cdot p(b_j)}
 \end{equation*}
 
-si annulla
+si annulla.\\ 
+Ora proviamo a calcolare le medie come fatto prima con le entropie:
+\begin{equation*}
+I(A;b_j) = \sum_{i=1}^qp(a_i\,|\,b_j)I(a:i;b_j) = \sum_{i=0}^qp(a_i\,|\,b_j)\log_r\frac{p(a_i\,|\,b_j)}{p(a_i)}
+\end{equation*}
+Ora posso fare lo stesso sui simboli di $B$:
+\begin{equation*}
+I(a_i;B) = \sum_{j=1}^sp(b_j\,|\,a_i)\log_r\frac{p(b_j\,|\,a_i)}{p(b_j)}
+\end{equation*}
+Ora arriviamo alla quantità che ci interessa, ovvero la mutua informazione del sistema:
+\begin{empheq}[box=\tcbhighmath]{equation*}
+I(A;B) = \sum_{i=1}^qp(a_i)I(a_i;B) = \sum_{i=1}^q\sum_{j=1}^sp(a_i,b_j)\log_r\frac{p(a_i,b_j)}{p(a_i)p(b_j)} = I(B;A)
+\end{empheq}
+La mutua informazione del sistema gode di tre proprietà:
+\begin{itemize}
+	\item Quantità sempre maggiore o uguale a 0 ($I(A;B) \geq 0$)\\
+	La mutua informazione è un prodotto fra due distribuzioni di probabilità: $p(a_i,b_j)$ e $\log_r\frac{p(a_i,b_j)}{p(a_i)p(b_j)}$ quindi usiamo la disuguagianza di Gibbs. 
+	\item Quantità uguale a 0 se e solo se $A$ e $B$ sono indipendenti ($I(A;B) = 0$)
+	\item La mutua informazione di $A;B$ è uguale alla mutua informazione di $B;A$  ($I(A;B) = I(B;A)$)
+\end{itemize}
 
+Vediamo ora le relazioni che ci sono fra mutua informazione e le varie entropie definite prima
 
+\begin{equation*}
+I(A;B) = \sum_{i=1}^q\sum_{j=1}^sp(a_i,b_j)[\log_rp(a_i,b_j) -\log_rp(a_i) \ log_rp(b_j)] =
+\end{equation*}
+
+\begin{equation*}
+= - \sum_{i=1}^q\sum_{j=1}^sp(a_i,b_j)\log_r\frac{1}{p(a_i,b_j)} + \sum_{i=1}^q\sum_{j=1}^sp(a_i,b_j)\log_r\frac{1}{p(a_i)} +  \sum_{i=1}^q\sum_{j=1}^sp(a_i,b_j)\log_r\frac{1}{p(b_j)} 
+\end{equation*}
+
+\begin{equation*}
+= - H_r(A,B) + H_r(A) + H_r(B) \geq 0
+\end{equation*}
+
+Posso quindi dire due cose:
+
+\begin{equation*}
+I(A;B) = - H_r(A,B) + H_r(A) + H_r(B) \geq 0
+\end{equation*}
+
+e un'altra considerazione sulle entropie:
+
+\begin{equation*}
+H_r(A,B) \leq H_r(A) + H_r(B)
+\end{equation*}
+
+Quindi la quantità di informazione media non supera in ogni caso la somma fra le singole.
+
+Inoltre ricordiamo che:
+
+\begin{equation*}
+H_r(A,B) = H_r(A) + H_r(B|A)
+\end{equation*}
+\begin{equation*}
+H_r(A,B) = H_r(B) + H_r(A|B)
+\end{equation*}
+
+Quindi 
+
+\begin{empheq}[box=\tcbhighmath]{equation*}
+I(A;B) = H_r(B) - H_r(B|A) \geq 0 
+\end{empheq}
+\begin{equation*}
+I(A;B) = H_r(A) - H_r(A|B)\geq 0 
+\end{equation*}
+
+Da qui ricaviamo anche che
+
+\begin{equation*}
+H_r(B|A) \leq H_r(B)
+\end{equation*}
+\begin{equation*}
+H_r(A|B) \leq H_r(A)
+\end{equation*}
+
+\subsection*{Capacità del canale}
+\addcontentsline{toc}{subsection}{Capacità del canale}
+La capacità del canale è la massima quantità di informazione che può transitare nel canale. La mutua informazione mi dice che:
+
+\begin{equation*}
+I(A;B) = \sum_{i=1}^q\sum_{j=1}^sp(a_i,b_j)\log_r\frac{p(a_i,b_j)}{p(a_i)p(b_j)}
+\end{equation*}
+
+Però questa quantità dipende da $a_i$ e io non voglio scrivere la capacità del canale basandomi sulle probabilità con cui l'utente inserisce un simbolo (la capacità di un tubo non dipende da quanta acqua ci metti dentro). Ma non posso togliere $p(a_i)$ viso che $p(b_j)$ dipende da essa. Quindi la mutua informazione non può essere usata.\\
+Definiamo la capacità del canale come:
+
+\begin{empheq}[box=\tcbhighmath]{equation*}
+C = max(I(A;B))
+\end{empheq}
+
+Questa è una formula astratta ma che da un'idea di quanto sia difficile calcolare la vera capacità di un canale.\\
+Ci sono dei canali più "semplici" da trattare? C'è una categoria di canali chiamata \textit{canali uniformi}.
+
+\begin{equation*}
+I(A;B) = H_r(B) - H_r(B|A) =
+\end{equation*}
+\begin{equation*}
+= H_r(B) - \sum_A\sum_Bp(a,b)\log_r\frac{1}{p(b|a)}
+\end{equation*}
+\begin{equation*}
+= H_r(B) - \sum_Ap(a)\sum_Bp(b|a)\log_r\frac{1}{p(b|a)}
+\end{equation*}
+
+Ora soffermiamoci su $\sum_Bp(b|a)\log_r\frac{1}{p(b|a)}$: ci sono dei canali in cui questa somma ha un valore indipendente da $a$, se vediamo ad esempio la matrice associata al canale ogni riga ha una somma sempre uguale, quindi ogni riga è una permutazione dell'altra. Questi canali sono i canali uniformi.
+
+\begin{equation*}
+\sum_Bp(b|a)\log_r\frac{1}{p(b|a)} = W
+\end{equation*}
+\begin{equation*}
+= H_r(B) - \sum_Ap(a) \cdot W
+\end{equation*}
+\begin{equation*}
+= H_r(B) - W
+\end{equation*}
 
 
 
