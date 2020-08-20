@@ -1,0 +1,50 @@
+\section*{Lezione 14}
+\addcontentsline{toc}{section}{Lezione 14}
+
+Quindi scartiamo la regola di verosimiglianza, anzi la semplifichiamo (la dimostrazione funzionerebbe a maggior ragione anche per la regola più complessa).
+
+La probabilità di commettere un errore è
+
+\begin{equation*}
+P_E = P[a_i \notin S(r)]
+\end{equation*}
+
+Dove $S$ è la sfera centrata in $b_j$ e $r$ è il raggio $n(Q + \epsilon_2)$ (sommo $\epsilon_2$ così per la legge debole dei grandi numeri posso rendere trascurabile la probabilità che stia fuori).
+
+\begin{equation*}
+P_E = P[a_i \notin S(r)] + P[a_i \in in S(r)] \cdot P[\text{almeno un altro msg valido} \in S(r)]
+\end{equation*}
+
+Quindi ci dev'essere un unico messaggio valido all'interno della sfera, se c'è diciamo che è $a^*$ e finito, altrimenti è avvenuto un errore (o c'è un unico messaggio valido ma non è quello spedito, oppure è il messaggio valido ma ce n'è anche un altro).
+
+Ora maggioro $P_E$ sapendo che $P[a_i \in in S(r)] \leq 1$:
+
+\begin{equation*}
+P_E \leq P[a_i \notin S(r)] + P[\text{almeno un...} \in S(r)]
+\end{equation*}
+
+\begin{equation*}
+P[\text{almeno un...}] \leq \sum_{a \in A - \{a_i\}} P[a \in S(r)]
+\end{equation*}
+
+\begin{equation*}
+P_E \leq P[a_i \notin S(r)] + \sum_{a \in A - \{a_i\}} P[a \in S(r)]
+\end{equation*}
+
+Quest'ultima è la quantità che voglio rendere minima.
+Parto dal primo termine e uso la legge debole dei grandi numeri:
+
+\begin{equation*}
+\forall \epsilon_2, \delta > 0, \; \; \exists \; n_0 \; \text{t.c.} \; \forall n > n_0 
+\end{equation*}
+\begin{equation*}
+\downarrow
+\end{equation*}
+\begin{equation*}
+P[\text{numero errori} > nQ+n\epsilon_2] < \delta
+\end{equation*}
+\begin{equation*}
+P[|\frac{\text{numero errori} - nQ}{n}| \leq \epsilon_2] > 1 - \delta
+\end{equation*}
+
+min 20
