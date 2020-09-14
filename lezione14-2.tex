@@ -1,0 +1,66 @@
+\section*{Lezione 14 - Parte 2}
+\addcontentsline{toc}{section}{Lezione 14 - Parte 2}
+
+\subsection*{Crittografia}
+\addcontentsline{toc}{subsection}{Crittografia}
+
+Che cos'è la crittografia? Lo studio delle tecniche che permettono di elaborare, memorizzare e trasmettere dati in presenza di agenti ostili (una persona o dispositivo che cerca di leggere dati salvati, disturbare le computazioni ecc..).
+
+Il nome deriva dalla composizione di due parole greche (\textit{kryptòs}: nascosta e \textit{graphia}: scrittura).
+Da non confondere con la steganografia (nascondere messaggi dove solo in pochi sanno dove andare a cercare).
+Il messaggio in crittografia è pubblico a tutti, ciò che è nascosto è il significato del messaggio (o il contenuto).
+
+Prima del 1976 esistevano solo crittosistemi simmetrici, da quell'anno nasce la crittografia a chiave pubblica.
+
+
+La crittografia ha due obiettivi:
+\begin{itemize}
+	\item Studiare e implementare \textit{crittosistemi}
+	\item Analizzare crittosistemi con l'obiettivo di trovare vulnerabilità (\textit{crittoanalisi})
+\end{itemize}
+
+Tipi di cifrari:
+\begin{itemize}
+	\item Simmetrici: chiavi per cifrare e decifrare uguali (DES, 3DES, AES)
+	\item Stream
+	\item Chiave pubblica: RSA, ElGamal,...
+\end{itemize}
+
+Primitive crittografiche:
+\begin{itemize}
+	\item Funzioni hash
+	\item Generatori di numeri pseudo-casuali
+\end{itemize}
+
+Protocolli:
+\begin{itemize}
+	\item Firme digitali
+	\item Scambio di chiavi
+	\item Autenticazioni
+	\item Scambio di segreti
+\end{itemize}
+
+\subsubsection*{Principio di Kerkhoffs}
+\addcontentsline{toc}{subsubsection}{Principio di Kerkhoffs}
+
+Il principio di Kerkhoffs dice che è inutile tener nascosto l'algoritmo di cifratura e quello di decifratura. La parte da tener nascosta è la più piccola possibile, la chiave.
+
+\begin{center}
+	\textit{La segretezza non dovrebbe risiedere nelle funzioni E() e D(), ma piuttosto in una piccola quantità di informazione chiamata chiave}
+\end{center}
+
+Gli algoritmi sono visibili a tutti quindi (se lo rompi pubblichi e diventi famoso).
+
+Un \textbf{crittosistema} è una quintupla formata dai seguenti elementi:
+
+\begin{itemize}
+	\item PT: spazio di tutti i testi in chiaro (plaintext)
+	\item CT: spazio di tutti i testi cifrati (ciphertext)
+	\item K: spazio delle chiavi (keyspace)
+	\item Funzioni di cifratura (E: PT $\times$ K $\rightarrow$ CT)
+	\item Funzioni di decifratura (D: CT $\times$ K $\rightarrow$ PT)
+\end{itemize}
+
+Come notazione si dice che $E_k(x)$ dove $k$ è la chiave e $x$ è il testo da cifrare.
+
+Lo spazio delle chiavi non dovrebbe essere troppo piccolo, altrimenti la chiave può essere trovata attraverso un attacco di forza bruta.

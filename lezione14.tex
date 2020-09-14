@@ -11,6 +11,8 @@ P_E = P[a_i \notin S(r)]
 
 Dove $S$ è la sfera centrata in $b_j$ e $r$ è il raggio $n(Q + \epsilon_2)$ (sommo $\epsilon_2$ così per la legge debole dei grandi numeri posso rendere trascurabile la probabilità che stia fuori).
 
+$\epsilon_2$ è la dimensione della corona circolare fuori dalla sfera centrata in $b_j$!
+
 \begin{equation*}
 P_E = P[a_i \notin S(r)] + P[a_i \in in S(r)] \cdot P[\text{almeno un altro msg valido} \in S(r)]
 \end{equation*}
@@ -46,5 +48,213 @@ P[\text{numero errori} > nQ+n\epsilon_2] < \delta
 \begin{equation*}
 P[|\frac{\text{numero errori} - nQ}{n}| \leq \epsilon_2] > 1 - \delta
 \end{equation*}
+\begin{equation*}
+P[|\frac{\sum_iX_i - nQ}{n}| > \epsilon_2] < \delta
+\end{equation*}
+\begin{equation*}
+P[|\frac{\frac{\sum_iX_i}{n} - \frac{Q}{n}}{n}| > \epsilon_2] < \delta
+\end{equation*}
+\begin{equation*}
+P[\frac1n\sum_iX_i - Q| > \epsilon_2] < \delta
+\end{equation*}
 
-min 20
+Così è in forma per la legge: media campionaria meno media teorica.
+
+Devo dimostrare che la somma, passo alla media e calcolo la probabilità d'errore calcolata come media di probabilità di errore su tutti i codici.
+
+\begin{equation*}
+\tilde{P_E} < \delta + \sum_{a \in A \ \{a_i\}} \tilde{P}[a \in S(r)]
+\end{equation*}
+
+Ma $\tilde{P}[a \in S(r)]$ comprende tutte le scelte di $A$, quindi non dipende più da $a$:
+
+\begin{equation*}
+\tilde{P_E} < \delta + \sum_{a \in A \ \{a_i\}} \leq \delta + (M-1) \tilde{P}[a \in S(r)]
+\end{equation*}
+\begin{equation*}
+\tilde{P_E} < \delta + \sum_{a \in A \ \{a_i\}} \leq \delta + (M) \tilde{P}[a \in S(r)]
+\end{equation*}
+
+\begin{center}
+con $a \neq a_i$
+\end{center}
+
+Quindi ora bisogna calcolare $\tilde{P}$, che è la probabilità media che $a$ appartenga alla sfera di raggio $r$ (visto nell'interpretazione geometrica!).
+
+\begin{equation*}
+\tilde{P}[a\in S(r)] = \frac{N(r)}{2^n}
+\end{equation*}
+
+Stiamo lavorando in uno spazio di Hamming, quindi abbiamo che $N(r)$ è 1 (centro sfera) più $\binom{n}{1}$ (numero di punti a distanza 1)...
+
+\begin{equation*}
+N(r) = 1 + \binom{n}{1} + \binom{n}{2} ...
+\end{equation*}
+\begin{equation*}
+N(r) = \sum_{k=0}^r \binom{n}{k}
+\end{equation*}
+
+$r$ è uguale a $n(Q+\epsilon_2)$, sappiamo che $Q<\frac12$ e che $\epsilon_2$ può essere piccolo a piacere, quindi metto $Q+\epsilon_2<\frac12$.
+
+Ora sfrutto una proprietà matematica definita inizialmente:
+
+\begin{equation*}
+\sum_{k=0}^{\lambda n} \binom{n}{k} \leq 2^{nH(\lambda)} \; \; \; \; \text{con } 0 < \lambda < 1
+\end{equation*}
+
+Ora pongo $\lambda = Q + \epsilon_2$, quindi :
+
+\begin{equation*}
+r = \lambda n
+\end{equation*}
+
+Quindi
+
+\begin{equation*}
+N(r) = \sum_{k=0}^r \binom{n}{k} \leq 2^{nH(Q+\epsilon_2)}
+\end{equation*}
+
+\newpage
+
+Ricordiamo che:
+
+\begin{equation*}
+\tilde{P}[a\in S(r)] = \frac{N(r)}{2^n}
+\end{equation*}
+
+Quindi abbiamo che 
+
+\begin{equation*}
+\tilde{P}[a \in S(r)] \leq 2^{-n[1 - H(Q + \epsilon_2)]}
+\end{equation*}
+
+Quindi tornando a: 
+
+\begin{equation*}
+\tilde{P_E} < \delta + \sum_{a \in A \ \{a_i\}} \leq \delta + (M) \tilde{P}[a \in S(r)]
+\end{equation*}
+
+otteniamo che
+
+\begin{equation*}
+\tilde{P_E} \leq \delta + M 2^{-n[1-H(Q+\epsilon_2)]}
+\end{equation*}
+
+Ora notiamo che: 
+
+\begin{equation*}
+1-H(Q+\epsilon_2) = \underbrace{1 - H(Q)}_{= C} + H(Q) - H(Q+\epsilon_2)
+\end{equation*}
+\begin{equation*}
+1-H(Q+\epsilon_2) = C - [H(Q+\epsilon_2) - H(Q)]
+\end{equation*}
+
+Ora analizziamo la differenza $H(Q+\epsilon_2) - H(Q)$:
+
+\begin{equation*}
+H(Q+\epsilon_2) \leq H(Q) + \epsilon_2 \frac{dH}{dx}|_Q
+\end{equation*}
+
+(spiegato in min 41 col grafico)
+
+\begin{equation*}
+\frac{dH}{dx}|_Q = \log\frac1Q - \log\frac{1}{1-Q} = \log\frac{1-Q}{Q}
+\end{equation*}
+
+Siccome $Q<\frac12$ abbiamo che $2Q < 1$, quindi $Q + Q < 1$, e ho che $Q < 1 - Q$, divido per $Q$ e ho che $\frac{1 - Q}{Q} > 1$, quindi:
+
+\begin{equation*}
+\log\frac{1-Q}{Q} > 1
+\end{equation*}
+
+Quindi concludendo, 
+
+\begin{equation*}
+1 - H(Q + \epsilon_2) \geq C - \underbrace{\epsilon_2 \log\frac{1-Q}{Q}}_{\text{Costante per costante, quindi } \epsilon_3}
+\end{equation*}
+
+\begin{equation*}
+1 - H(Q + \epsilon_2) \geq C - \epsilon_3
+\end{equation*}
+
+Ora riprendiamo
+
+\begin{equation*}
+\tilde{P_E} \leq \delta + M 2^{-n[1-H(Q+\epsilon_2)]}
+\end{equation*}
+e sostituiamo la potenza:
+
+\begin{equation*}
+\tilde{P_E} \leq \delta + M 2^{-n[C - \epsilon_3]}
+\end{equation*}
+
+Ricordiamo che $M$ è il numero di messaggi validi scelto calibrando $\epsilon_1$ per avvicinarci il più possibile alla capacità di canale.
+
+\begin{equation*}
+\tilde{P_E} \leq \delta + 2^{n(C-\epsilon_1)} \cdot 2^{-n[C - \epsilon_3]}
+\end{equation*}
+\begin{equation*}
+\tilde{P_E} \leq \delta + 2^{-n(\epsilon_1-\epsilon_3)}
+\end{equation*}
+
+Dove $(\epsilon_1$ e $\epsilon_3$ si scelgono in modo che la loro differenza dev'essere maggiore di 0.
+In questo modo al crescere di $n$, $2^{-n(\epsilon_1 - \epsilon_3)}$ si avvicina a 0.
+Quindi esiste almeno un codice che si avvicina alla capacità di canale, lavorando su $\epsilon_1$, mantenendo arbitrariamente bassa la probabilità di errore, lavorando su $\epsilon_2$ (o $\epsilon_3$).\\
+Questo avviene mediamente, quindi a maggior ragione esiste almeno un codice che si avvicina alla capacità di canale e mantiene bassa la probabilità di errore.
+
+
+Il problema è che il teorema ci dice che esiste, ma non ci dice come costruirlo. Inoltre è un risultato asintotico, quindi per estensioni di $n$ molto grandi.
+
+Poi è dimostrato per rumore bianco, ma in realtà la struttura dei canali è diversa (burst di errori ecc...).
+
+Ad esempio se ogni posizione del pacchetto ha probabilità di errori diverse, allora al posto di una sfera viene un ellisse strana e i conti diventano complicati.
+
+Si usano i LDPC (Low Density Parity Code), presi tantissimi bit in ingresso (ordine di decine di migliaia) e si costruiscono un po' di equazioni di parità (come Hamming, sistema di equazioni). Si usano poche equazioni di parità (poca densità) e si fanno un po' di esperimenti al pc per capire quanta densità dare.
+
+\subsection*{Inverso Teorema di Shannon}
+\addcontentsline{toc}{subsection}{Inverso Teorema di Shannon}
+
+Innanzitutto mostriamo la disuguaglianza di Fano:
+\begin{equation*}
+H(A|B) \leq H(P_E) + P_E\log(M-1)
+\end{equation*}
+
+Dove $H(P_E)$ è l'entropia di una sorgente bernoulliana che ha due simboli: uno che ha $P_E$ probabilità di uscire e l'altro $1 - P_E$.
+
+
+Si sceglie un numero di messaggi $M=2^{(C+\epsilon)}$ (andiamo quindi oltre alla capacità di canale, sommando $\epsilon$). Ogni messaggio ha probabilità uguale.
+
+\begin{equation*}
+I(a_i) = \log M = n(C+\epsilon) = nC + \underbrace{n\epsilon}_{\text{quantità che supera la capacità di canale}}
+\end{equation*}
+
+La mutua informazione del sistema:
+
+\begin{equation*}
+H(A) - H(A|B) \leq nC
+\end{equation*}
+
+perchè la capacità è il massimo della mutua informazione, quindi non può superarla!
+
+
+Ricordiamo che
+\begin{equation*}
+H(A) = \sum_A\frac{1}{M}\log M
+\end{equation*}
+\begin{equation*}
+H(A) = \frac{1}{M}\log M \sum_A 1
+\end{equation*}
+\begin{equation*}
+\sum_A 1 = M
+\end{equation*}
+\begin{equation*}
+H(A) = \frac{1}{M}\log M \cdot M
+\end{equation*}
+\begin{equation*}
+H(A) = \log M
+\end{equation*}
+
+Se ogni volta che viene scelto un simbolo la quantità di informazione è sempre $\log M$ allora la quantità di informazione è $\log M$
+
+manca un po di rob
+
