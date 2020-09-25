@@ -47,7 +47,49 @@ Abbiamo una sequenza di testi di in chiaro $m_1, m_2, ...$ di testi in chiaro e 
 \textbf{Modi di operazione}: 
 \begin{itemize}
 	\item ECB (Electronic CodeBook)\\
-	Il più semplice, ma anche il meno sicuro: ho $m_1$, lo cifro usando $E_k$ e ottengo $c_1$ (e così via per tutte le $m$). Quando Eve comincia ad ascoltare (mettiamo che si perda alcuni pezzi), non ha vita difficile visto che ogni operazione di cifratura è indipendente dalla precedente. Oppure esempio pinguino Linux, cifro blocchi uguali in modo uguale, il risultato sarà strano ma avrà la forma del pinguino (il pattern non viene rotto).
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.5\linewidth]{immagini/img38}
+	\end{figure}
+	Il più semplice, ma anche il meno sicuro: ho $m_1$, lo cifro usando l'algoritmo $E_k$ e ottengo $c_1$ (e così via per tutte le $m$). Quando Eve comincia ad ascoltare (mettiamo che si perda alcuni pezzi), non ha vita difficile visto che ogni operazione di cifratura è indipendente dalla precedente. Oppure esempio pinguino Linux, cifro blocchi uguali in modo uguale, il risultato sarà strano ma avrà la forma del pinguino (il pattern non viene rotto). Ha però vantaggi: la modifica di un blocco di codice a causa del rumore, non rovina i successivi (adatto quindi a canali rumorosi).
+	\item CBC (Cipher Block Chaining)\\
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.5\linewidth]{immagini/img37}
+	\end{figure}
+Effettua una concatenazione con quello che è successo in precedenza. In particolare il messaggio cifrato $c_i = E_k(c_{i-1} \oplus m_i)$.
+\'E il modo di operazione più usato (se cifri l'immagine del pinguino viene un casino). Il problema è che se il rumore rovina un blocco allora tutti i successivi verranno sbagliati. Quindi il canale di comunicazione dev'essere affidabile.
+\item OFB (Output Feedback)\\
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\linewidth]{immagini/img39}
+\end{figure}
+Viene prodotta una sequenza di chiavi derivate, che vengono utilizzare per effettuare la cifratura. In pratica cifro $m_1$ facendo lo xor con $z_1$ e così via. L'idea è fare lo xor con dei bit casuali per ottenere un risultato casuale. Perto da $z_0$ che trovo in maniera casuale. Se $E_k$ è fatto bene lo posso usare come generatore di numeri casuali.
+Questo modo è molto veloce in quanto fa solo lo xor con le chiavi derivate (es guardo un video in HD). \'E affidabile anche in canali rumorosi in quanto l'aver perso un blocco $m_i$ non pregiudica quello successivo. Però è vulnerabile ad un attacco che modifica lo stream. (es. se si parla di cifre, prezzi, posso invertire un numero).
+\item CFB (Cipher FeedBack)\\
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\linewidth]{immagini/img40}
+\end{figure}
+I blocchi del testo vengono cifrati facendo uno xor bit a bit con l'output dell'algoritmo di cifratura applicato al blocco precedente. Il canale dev'essere affidabile. Di pro c'è che se l'ultimo blocco arriva corretto allora anche i precedenti lo sono stati.
+
+\newpage
+\item s-bit CFB\\
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\linewidth]{immagini/img41}
+\end{figure}
+Funziona come CFB, però si applicano delle trasformazioni in più (rotazioni e selezioni). Però più lento.
+
+\item CTR (Counter Mode)\\
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\linewidth]{immagini/img41}
+\end{figure}
+Usato dalle ATM (Asynchronous Transfer Mode) (es. Fastweb), ma anche da IPSec (VPN).
+Si generano chiavi derivate diverse sfruttando i diversi valori dei contatori. Molto efficiente
+
+
 \end{itemize}
 
 
