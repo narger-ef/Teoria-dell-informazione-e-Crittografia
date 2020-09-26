@@ -143,8 +143,24 @@ Se Eve intercetta $E_B(m)$ dovrebbe risolvere un problema che abbiamo assunto es
 Il problema è che in una grande rete di utenti Alice deve chiedere a tutti i loro algoritmi di cifratura.
 
 Seconda soluzione:\\
-Alice e Bob scelgono un algoritmo di cifratura e un algorimo di decifratura
+Alice e Bob scelgono un algoritmo di cifratura e un algorimo di decifratura.
+I due algoritmi di decifratura/cifratura commutano, quindi possono essere scambiati.
+\begin{enumerate}
+	\item Alice calcola $E_A(m)$ e lo manda a Bob
+	\item Bob lo cifra con $E_B$ e lo rimanda ad Alice
+	\item Alice riceve $E_B(E_A(m))$, applica $D_A$ e manda a Bob
+	\item Bob applica $D_B$ e ottiene $D_B(D_A(E_B(E_A(m)))) = D_A(E_A(m)) = m$
+\end{enumerate}
+Lo svantaggio è che i messaggi vanno avanti e indietro due volte, però ognuno tiene il suo algoritmo di cifratura e può cambiarlo quando vuole.
 
-min 30 p2
+Il problema è che il canale non è autenticato: quando Alice riceve la chiave pubblica di Bob, come fa ad essere sicura che non abbia ricevuto invece quelle di Eve?
 
+Definizione formale di one-way function:
+$f$ può essere computata in tempo polinomiale da una MDT, ed esistono due polinomi $p(\dot)$ e $q(\dot)$ tali per cui $p(|x|) \leq |f(x)| \leq q(|x|)$ (quindi l'output di $f$ non dev'essere troppo corto).
 
+Per ogni algoritmo $A$ dell'attaccante che può essere eseguito in tempo polinomiale su una macchina probabilitstica TM e per ogni polinomio $p(\dot)$ esiste un numero $n_{A,p}$ tale per cui:
+\begin{equation*}
+\forall n \geq n_{A,p} \; \; Prob[x \leftarrow \{0,1\}^n; x'\leftarrow A(f(x)):f(x)=f(x')] \leq \frac1{p(n)}
+\end{equation*}
+
+Il problema è che se $P=NP$ allora le funzioni one-way non esistono! Se però si dimostra che una one-way function esiste allora $P \neq NP$

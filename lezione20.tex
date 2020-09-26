@@ -1,0 +1,90 @@
+\section*{Lezione 20}
+\addcontentsline{toc}{section}{Lezione 20}
+
+\subsection*{Esponenziazione modulare}
+Riprendiamo con un esempio: il gruppo moltiplicativo sarà $\mathbb{Z}_5^* = 1,2,3,4$, che è contenuto in $\mathbb{Z}_5 = {0,1,2,3,4}$.
+
+2 è un generatore di $\mathbb{Z}_5^*$, infatti:
+
+\[
+\mathbb{Z}_5^* = \{2^0, 2^1, 2^2, 2^3\} = \{1,2,4,3\}
+\]
+
+Quindi possiamo definire la seguente funzione di esponenziazione modulare:
+\begin{equation*}
+f(z) = 2^z \text{ mod } 5
+\end{equation*}
+
+Nessuno è riuscito a trovare un algoritmo in P per trovare $z$ a partire da $f(z)$.
+Dato $x$, però, posso calcolare $g^x \text { mod } p$ in tempo polinomiale (rispetto all'input). Ha senso considerare l'esponente $x$ fra 0 e $p-2$ (minore di 0 va all'inverso, maggiori di $p-2$, riconsidero gli stessi elementi visto che c'è modulo).
+La dimensione dell'input è il numero di bit che servono per rappresentare gli elementi di $\mathbb{Z}_p^*$, quindi circa $n=log_2p$.\\
+Possiamo quindi scrivere:
+\begin{equation*}
+	x = \sum_{j=0}^{n-1}x_j2^j
+\end{equation*}
+Dove $(x_{n-1}, ..., x_1, x_0)$ è la rappresentazione binaria di $x$.
+
+Uno pseudocodice potrebbe essere:
+
+\medskip
+	\begin{algorithmic}
+	\State \texttt{result} = 1
+	\While {$x > 0$}
+	\State \texttt{result} = (\texttt{result} * $g$) \% $p$
+	\State $x = x - 1$
+	\EndWhile
+	\State{\textbf{return} \texttt{result}}	
+\end{algorithmic}
+
+\medskip
+Però questo algoritmo chiede un numero esponenziale di iterazioni in quanto $x \approx 2^n$.
+Siccome però vale che:
+\begin{equation*}
+	g^x = g^{\sum_{j=0}^{n-1}x_j2^j} = \prod_{j=0}^{n-1} g^{x_j2^j}= \prod_{j=0}^{n-1}(g^{2^j})^{x_j} \; \; \text{ mod } p
+\end{equation*}
+Osservando l'ultima parte della formula posso calcolarmi tutti i valori di $g^{2^j}$ per $j \in \{0,1,...n-1\}$ e moltiplico fra loro solo quello per cui vale $x_j = 1$. Questo può essere fatto in maniera polinomiale attraverso il metodo \textit{square and multiply}.
+
+\medskip
+
+	\begin{algorithmic}
+	\State {\texttt{result} $=1$}
+	\For{$j=n-1 \text { downto } 0$}
+	\State {\texttt{result} = (\texttt{result} * \texttt{result) mod $p$}}
+	\If{$x_j = 1$}
+	\State {\texttt{result} = \texttt{result} $* g$ mod $p$}
+	\EndIf
+	\EndFor
+	\State{\textbf{return} \texttt{result}}		
+	\end{algorithmic}
+
+\medskip
+
+L'inverso dell'esponenziazione modulare è chiamato \textit{logaritmo discreto}.
+Il problema è così definito:
+\begin{itemize}
+	\item Numero primo $p$
+	\item Generatore di $\mathbb{Z}_p^*$ chiamato $g$
+	\item $y \in \mathbb{Z}_p^*$
+\end{itemize}
+Si computa una $x \in \{0, 1, ..., p-2\}$ tale per cui $g^x \equiv y \text{ mod } p$.
+
+La computazione del logaritmo discreto è un problema intrattabile in tempo polinomiale. Per avere un idea della difficoltà del problema, prova a calcolare a mano i logaritmi base 3 dentro a $\mathbb{Z}_{113}^*$.
+
+Abbiamo quindi trovato una scatola dove nascondere un valore $x$ che non può più essere aperta; in altre parole abbiamo trovato una one-way function. Manca però una \textbf{trapdoor} che consenta a Bob di trovare una soluzione in modo facile.
+
+Un altro esempio di funzione che sembra essere one-way è la moltiplicazione fra numeri naturali: dati due numeri primi $p$ e $q$, calcolare il prodotto $n = p \dot q$.
+Il problema inverso è la fattorizzazione: dato un numero interno $n$ che è il prodotto di due numeri primi, trovarli (ogni numero ammette un unica rappresentazione in fattori primi).\\
+
+
+
+Un esempio di fattorizzazione:\\
+
+
+
+RSA-768 = 12301866845301177551304949583849627207728535695953347921973224521517264005
+07263657518745202199786469389956474942774063845925192557326303453731548268
+50791702612214291346167042921431160222124047927473779408066535141959745985
+6902143413
+
+
+
