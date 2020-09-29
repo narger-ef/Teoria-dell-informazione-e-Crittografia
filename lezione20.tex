@@ -200,11 +200,93 @@ Egli recupera $m$ calcolando:
 	c^{d_B} = 5761^{6597} \text{ mod } 11413 = 9726
 \end{equation*}
 
-Ovviamente nella realtà le dimensioni dei numeri sono di almeno 1024 bit.
-
-min 25
+Ovviamente nella realtà le dimensioni dei numeri sono di almeno 1024 bit.\\
 
 
+Quanto è difficile per Eve conoscere $\phi(n)$? \'E facile se conosciamo la fattorizzazione di $n$:
+\begin{equation*}
+	\phi(n) = n \prod_{p|n}(1 - \frac1p)
+\end{equation*}
+\'E difficile se partiamo da $n$ senza conoscere la sua fattorizzazione: in altre parole rompere RSA è equivalente a fattorizzare $n$.
+
+Se Eve riuscisse a scoprire $\phi(n)$ può fattorizzare $n$:
+\begin{itemize}
+	\item Sa che $n=p\cdot q$ e che $\phi(n) = (p-1)(q-1) = pq - (p+q)+1=n-(p+q)+1$
+	\item Calcola $p+q=n-\phi(n) + 1$
+	\item Ora che conosce la somma e il prodotto di $p$ e di $q$, li calcola risolvendo la seguente equazione quadratica $x^2 -(p+q) = 0$.
+\end{itemize}
+
+I valori di $p$ e $q$ non dovrebbero essere troppo vicini fra loro (altrimenti si avvicinano alla $\sqrt{n}$ e quindi provando a cercare intorno a quel valore troviamo uno dei due fattori e fattorizziamo $n$).
+Vediamo un caso in cui $p$ e $q$ sono vicini:
+\begin{itemize}
+	\item Assumiamo che $p>q$
+	\item Se i due sono vicini, allora $frac{p-q}{2}$ è piccolo, e $\frac{p+q}{2}$ è leggermente più grande di $\sqrt{n}$.
+	\item Dalla sequenze uguaglianza (che è valida in generale):
+	\begin{equation*}
+		\frac{(p+q)^2}{4} - n = \frac{(p-q)^2}{4}
+	\end{equation*}
+	Deduciamo che $\frac{(p+q)^2}{4}$ è un quadrato perfetto.
+	\item Allora cerchiamo degli interi $x > \sqrt{n}$ tali per cui $x^2-n$ è un quadrato perfetto che chiamiamo $y^2$.
+	\item Da $y^2 = x^2 -n$ otteniamo:
+	\begin{equation*}
+		n = x^2-y^2 =(x+y)(x-y)
+	\end{equation*}
+	E quindi abbiamo fattorizzato! $p=x+y$ e $q=x-y$
+\end{itemize}
 
 
+Dovremmo anche occuparci del valore di $\phi{n}$: assumiamo che il MCD è grande, allora
+\begin{equation*}
+	u = \text{mcm}(p-1,q-1) = \frac{(p-1)(q-1)}{\text{MCD}(p-1,q-1)} = \frac{\phi(n)}{\text{mcm(p-1, q-1)}}
+\end{equation*}
+Dalle proprietà dei campi se $d' \equiv e^{-1} \text{ mod } u $ si può utilizzare $d'$ per decifrare al posto di $d$. Ma siccome $u$ è piccolo, si può trovare a tentativi. Quindi è meglio se $p-1$ e $q-1$ abbiano divisori grandi.\\
+
+Un altro errore è utilizzare lo stesso modulo $n$ per un gruppo di utenti.
+Alice manda
+\begin{equation*}
+	c_1 = m^{e_1} \text { mod } n
+\end{equation*}
+\begin{equation*}
+	c_2 = m^{e_2} \text { mod } n
+\end{equation*}
+Se MCD$(e_1, e_2) = 1$ (sono coprimi fra loro) allora Eve può usare il teorema di Euclide esteso e calcola $r$ e $s$ tali per cui $re_1 + se_2 = 1$.
+Una volta calcolato $r$ e $s$ Eve può calcolare:
+\begin{equation*}
+	c_1^rc_2^s \equiv m^{re_1}m^{se_2} \equiv m^{re_1 + se_2} \equiv m \text { mod } n
+\end{equation*}
+
+Anche utilizzare esponenti piccolo per valori diversi del modulo può essere un problema: mettiamo che un utente vuole mandare $m$ a tre utenti $A,B,C$ usando tre moduli diversi:
+\begin{equation*}
+	c_A = m^3 \text{ mod } n_A
+\end{equation*}
+\begin{equation*}
+	c_B = m^3 \text{ mod } n_B
+\end{equation*}
+\begin{equation*}
+	c_C = m^3 \text{ mod } n_C
+\end{equation*}
+
+Se $n_A,n_B$ e $n_C$ sono coprimi allora Eve può usare il teorema dei Cinesi per calcolare un valore $m$ la cui radice cubica intera ritorna $m$.\\
+
+Rompere RSA equivale a fattorizzare $n$.
+
+\subsubsection*{Randomized RSA}
+
+Un modo robusto di utilizzare RSA è la seguente: supponiamo di avere una sequenza di singoli bit da cifrare. Allora prendiamo la chiave pubblica di RSA $(n,e)$, allora se cifriamo 0 rimane 0, e così anche 1:
+\begin{equation*}
+	0^e \equiv 0 \text { mod } n
+\end{equation*}
+\begin{equation*}
+	1^e \equiv 1 \text { mod } n
+\end{equation*}
+quindi il testo cifrato è uguale al testo in chiaro!
+Si potrebbe risolvere questa cosa creando pacchetti di messaggi, ma magari non è possibile perchè devo mandarli immediatamente. Qualcuno ha però dimostrato che il bit meno significativo del testo in chiaro è un hard-core bit per l'esponenziazione modulare $m^e$ mod $n$ (quindi è difficile calcolare il bit meno significativo del testo in chiaro senza trapdoor, ovvero $d$ aka one-way function)
+L'idea è quella di mettere il bit da cifrare come bit meno significativo, e gli altri bit vengono messi a random!
+\subsubsection*{Esempio}
+Alice vuole mandare a Bob un bit: prende la chiave pubblica di Bob $(n_B, e_B)$.
+Sceglie poi un intero random $x < \frac{n_B}{2}$ (quindi $2x < n_B$).
+Poi manda a Bob $y=(2x+b)^{e_B}$ mod $n_B$.\\
+Bob quando riceve $y$ computa $y^{d_B}$ mod $n_B = 2x + b$ e prende il bit meno significativo del risultato.\\
+
+Ovviamente questo è fattibile per cifrare qualche bit ogni tanto, e non per cifrare un bit alla volta un film.
 

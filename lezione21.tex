@@ -1,0 +1,53 @@
+\section*{Lezione 21}
+\addcontentsline{toc}{section}{Lezione 21}
+
+\subsection*{Firme digitali e funzioni di hash}
+\addcontentsline{toc}{subsection}{Firme digitali e funzioni di hash}
+
+Una firma digitale è una quintupla $(P,A,K,S,V)$ dove:
+\begin{itemize}
+	\item $P$ è l'insieme di tutti i possibili messaggi che vorremmo firmare
+	\item $A$ è l'insieme di tutte le possibili firme
+	\item $K$ è l'insieme di tutte le possibili chiavi
+	\item $S=\{\text{sig}:P\times K \rightarrow A\}$ è l'insieme delle funzioni di firma
+	\item $V=\{\text{ver}:P\times A \times K \rightarrow \{T, F\}\}$ è l'insieme delle funzioni di verifica
+\end{itemize}
+
+Come nelle funzioni di cifratura e decifratura, scegliendo una chiave $k \in K$ essa diventa un parametro:
+\begin{equation*}
+	\text{sig}_k:P \rightarrow A
+\end{equation*}
+\begin{equation*}
+	\text{ver}_k:P \times A \rightarrow \{T, F\}
+\end{equation*}
+
+La funzione di verifica mi dice sempre T o F.
+
+La coppia $(x,y)$ è chiamata un messaggio firmato.
+
+Diversamente da un autografo (che è fatto a mano), le firme:
+\begin{itemize}
+	\item la firma $y$ è separata dal documento $x$
+	\item la firma non è sempre la stessa: dipende dal documento, quindi ce ne sono diverse per diversi documenti
+\end{itemize}
+
+La firma digitale serve per autenticare l'originatore del messaggio: solo chi conosce una certa informazione segreta può produrre la firma del messaggio.
+
+Per firmare serve una chiave segreta, per verificare si usa una chiave pubblica; quindi il meccanismo è simile a quello dei crittosistemi a chiave pubblica ma al contrario.
+
+Attenzione: autentica il generatore del messaggio ma non chi lo ha spedito!
+
+\subsubsection*{Esempio}
+Alice vuole firmare un messaggio $m$:
+\begin{itemize}
+	\item Lei scegli una coppia $(sig_k, ver_k)$ di algoritmi
+	\item Mantiene segreta $sig_k$ e rende $ver_k$ pubblica
+	\item Calcola $\sigma=sig_k(m)$
+\end{itemize}
+A questo punto Bob vuole verificare la firma prodotta da Alice:
+\begin{itemize}
+	\item Considera la coppia $(m, \sigma)$
+	\item Prende l'algoritmo $ver_k$ e accetta la valida se e solo se $ver_k(m, \sigma) = T$.
+\end{itemize}
+
+min 22
