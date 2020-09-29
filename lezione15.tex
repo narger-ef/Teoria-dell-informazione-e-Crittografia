@@ -175,7 +175,7 @@ Diciamo che $PT=CT=\Sigma^d$ dove $\Sigma=\{0, 1, 2,..., 25\}$.
 	2 & 5
 	\end{bmatrix}
 	\]
-	Quindi questo crittosistema non va molto bene in quanto si riesce a ricavare la chiave osservando un testo cifrato e un testo in chiaro. In particolare Eve è stato fortunato perchè i due vettori sono linearmente indipendenti, quindi creano uno spazio vettoriale di dimensione 2.
+	Quindi questo crittosistema non va molto bene in quanto si riesce a ricavare la chiave osservando un testo cifrato e un testo in chiaro. In particolare Eve è stata fortunata perchè i due vettori sono linearmente indipendenti, quindi creano uno spazio vettoriale di dimensione 2.
 	
 
 	
@@ -239,7 +239,7 @@ Per difendersi da un attacco di questo tipo cosa si fa?
 	\item Lettere nulle: si aggiungono nel plaintext delle lettere a bassa frequenza, non fanno parte del messaggio
 	\item Omofone: assumiamo di utilizzare $\Sigma=\{A,B, ...,Z\}$ e $\Gamma=\{0,1,2,...,99\}$ come alfabeti per \textit{PT} e \textit{CT}:
 	\begin{itemize}
-		\item Siccome la lettera \texttt{E} occorre il 12\% delle volte, associamo ad essa 12 simboli di $\Sigma$ (chiamati gli omofoni di \texttt{E})
+		\item Siccome la lettera \texttt{E} occorre il 12\% delle volte, associamo ad essa 12 simboli di $\Gamma$ (chiamati gli omofoni di \texttt{E})
 		\item Quando cifriamo \texttt{E} si sceglie casualmente uno di questi simboli ($\rightarrow$ cifratura casuale)
 		\item La scelta può essere anche fatta "a mano" in modo da appiattire le frequenze
 	\end{itemize}
