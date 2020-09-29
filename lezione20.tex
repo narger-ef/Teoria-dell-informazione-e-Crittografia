@@ -30,15 +30,17 @@ Uno pseudocodice potrebbe essere:
 	\begin{algorithmic}
 	\State \texttt{result} = 1
 	\While {$x > 0$}
-	\State \texttt{result} = (\texttt{result} * $g$) \% $p$
+	\State \texttt{result} = (\texttt{result} * $g$)\text { mod }$p$
 	\State $x = x - 1$
 	\EndWhile
 	\State{\textbf{return} \texttt{result}}	
 \end{algorithmic}
 
 \medskip
-Però questo algoritmo chiede un numero esponenziale di iterazioni in quanto $x \approx 2^n$.
-Siccome però vale che:
+Però questo algoritmo chiede un numero esponenziale di iterazioni in quanto $x \approx 2^n$.\\
+
+
+Però vale che:
 \begin{equation*}
 	g^x = g^{\sum_{j=0}^{n-1}x_j2^j} = \prod_{j=0}^{n-1} g^{x_j2^j}= \prod_{j=0}^{n-1}(g^{2^j})^{x_j} \; \; \text{ mod } p
 \end{equation*}
@@ -81,10 +83,128 @@ Un esempio di fattorizzazione:\\
 
 
 
-RSA-768 = 12301866845301177551304949583849627207728535695953347921973224521517264005
-07263657518745202199786469389956474942774063845925192557326303453731548268
-50791702612214291346167042921431160222124047927473779408066535141959745985
-6902143413
+RSA-768=1230186684530117755130494958384962720772853569595334792197322452151726400507263657518745202199786469389956474942774063845925192557326303453731548268
+507917026122142913461670429214311602221240479274737794080665351419597459856902143413 = 33478071698956898786044169848212690817704794983713768568912431388982883793878002287614711652531743087737814467999489 × 36746043666799590428244633799627952632279158164343087642676032283815739666511279233373417143396810270092798736308917
+
+
+L'algoritmo "banale" è quello che prova a dividere $n$ dato in input per tutti gli interi da 2 a $\sqrt{n}$, ma che equivale a un tempo di:
+
+\begin{equation*}
+	O(\sqrt{n}) = O(\sqrt{2^m}) = O(2^{\frac{m}{2}})
+\end{equation*}
+
+che è esponenziale rispetto a $m$ (il numero di bit).
+
+\subsection*{Algoritmo di Diffie-Hellman}
+\addcontentsline{toc}{subsection}{Algoritmo di Diffie-Hellman}
+
+Vogliono sfruttare queste "mancanze" matematiche in crittografia. Alice e Bob scelgono (in maniera pubblica) un numero primo $q$ e un generatore $g$ del gruppo ciclico $\mathbb{Z}_q^*$. Poi alice sceglie a caso un $x_A$, con $0<x_A<q-1$, e lo tiene segreto. Bob allo stesso modo sceglie un $0 < x_B < q-1$ e lo tiene segreto.
+
+Ora:
+\begin{enumerate}
+	\item Alice calcola $g^{x_A}$ mod $q$ e lo manda a Bob. In altre parole nasconde $x_A$ dentro una "cassetta".
+	\item Bob calcola $g^{x_B}$ mod $q$ e lo manda ad Alice.
+	\item Alice calcola $(g^{x_B})^{x_A} = g^{x_A \cdot x_B} = k$
+	\item Bob calcola $(g^{x_A})^{x_B} = g^{x_B \cdot x_A} = k$ 
+	\item $k$ è il valore della chiave segreta
+\end{enumerate}
+Eve vede solamente $q, g, g^{x_A}, g^{x_B}$, ma per trovare $x_A$ o $x_B$ deve risolvere un logaritmo discreto! Anche calcolare $g^{x_A \cdot x_B}$ partendo da $g^{x_A}$ e $g^{x_B}$, ma anche questo sembra un problema intrattabile.
+
+\subsubsection*{Esempio}
+
+Alice e Bob si mettono d'accordo utilizzando $q=25307$ e $g=2$ (che è un generatore di $\mathbb{Z}_{25307}^*)$.
+Alice sceglie $x_A = 3578$ e Bob $x_B = 19956$.
+Alice computa $g^{x_A} = 2^{3578} = 6113$ mod 25307 e lo manda a Bob. Allo stesso modo Bob calcola $g^{x_B} = 2^{19956} = 7984$ mod 25307 e lo manda ad Alice.
+Quando Bob riceve $g^{x_A} = 6113$ da Alice, egli calcola $k=(g^{x_A})^{x_B} = 6113^{19956} = 3694$ mod 25307, e come lui anche Alice calcola $(g^{x_B})^{x_A} = 7984^{3578} = 3694$ mod 25307, che è la stessa chiave $k$ calcolata da Bob.
+Ora Alice e Bob possono usare $k$ come chiave segreta in un crittosistema simmetrico
+
+\subsection*{Crittosistema El Gamal}
+\addcontentsline{toc}{subsection}{Crittosistema El Gamal}
+
+Ogni utente sceglie un numero primo $q$, e considera un generatore $g$ del gruppo ciclico $\mathbb{Z}_q^*$.
+Come prima sceglie un numero $a$ tale che $0 < a < q-1$ e computa $g^a$ mod $q$. La chiave segreta sarà $a$, e verrà nascosta dentro $g^a$ mod $q$. La chiave pubblica è $k_p(q, g, g^a)$. Per ottenere la chiave segreta dalla chiave pubblica dovremmo computare $log_gg^a$ mod $q$.\\
+
+
+Alice vuole mandare un messaggio $m$ a Bob (questa $m$ dev'essere un elemento di $\mathbb{Z}_q^*$ quindi dev'essere minore di $log_2q$ bit, altrimenti lo divide in blocchi).
+Lei prende la chiave pubblica di Bob $k_{pB} = (q, g, g^a)$. Ora sceglie un valore $0 < \ell < q-1$ e calcola $\gamma = g^{\ell}$ mod $q$ e $\delta = m \cdot (g^a)^{\ell}$ mod $q$.
+Poi manda a Bob il testo cifrato $c=(\gamma, \delta)$.
+Il valore $\ell$ rende i testi cifrati non correlabili fra loro (anche se sono sempre uguali).
+La decifratura funziona in questo modo:
+\begin{equation*}
+\delta = m \cdot (g^a)^{\ell} \text{ mod } q.
+\end{equation*}
+\begin{equation*}
+m \cdot g^{-a\ell} \cdot \delta
+\end{equation*}
+\begin{equation*}
+	m \cdot g^{-a\ell} \cdot \delta = \gamma^{-a} \cdot \delta = \gamma^{q-1-a} \cdot \delta
+\end{equation*}
+
+Eve, come prima, dovrebbe risolvere un logaritmo discreto per rompere il crittosistema.
+
+Questi crittosistemi a chiave pubblica però come si può vedere sono molto più lenti di quelli simmetrici (centinaia di volte più lenti).
+Quindi si creano dei crittosistemi ibridi che sfruttano le potenzialità di entrambi: si usa un crittosistema a chiave pubblica per decidere una chiave segreta (chiave di sessione), e poi si utilizza questa in un crittosistema simmetrico. In questo modo si utilizza il crittosistema lento solo per passarsi qualche centinaia di bit.
+
+\subsection*{RSA}
+\addcontentsline{toc}{subsection}{RSA}
+
+Dati due numeri primi molto grandi $p$ e $q$ della stessa dimensione più o meno (almeno 1024 bit ciascuno), ma valori molto diversi.\\
+Si pone $n=pq$ ($n$ chiamato \textit{modulo} di RSA).
+Ora si crea la funzione toziente di Nepero $\phi(n) = \phi(pq) = \phi(p)\phi(q) = (p-1)(q-1)$.\\
+$\phi(n)$ è il numero di interi compresi fra 1 e $n$ che sono \textit{coprimi} con $n$ ($\phi(n) = |\{x:1 \leq x \leq n \text{ and MCD}(x,n) = 1\}|$).\\
+In altre parole $\phi(n)$ è il numero di elementi contenuti in $\mathbb{Z}_N^*$.\\
+
+
+Si sceglie un $d$ a caso tale che $1 < d < \phi(n)$ e che MCD$(d, \phi(n)) = 1$, quindi $d$ è invertibile modulo $\phi(n)$ (quindi è invertibile in $\mathbb{Z}_{\phi(N)}$)
+
+Usando l'algoritmo di Euclide esteso si computa $e$ tale per cui $e \cdot d \equiv 1 \text{ mod } \phi(n)$ (che vuol dire $e \equiv d^{-1} \text{ mod } \phi(n)$)
+
+La chiave pubblica è data dalla coppia $(n, e)$, mentre la chiave segreta sarà $d$. Ovviamente i valori di $p, q, $ e $\phi(n)$ devono rimanere segreti.
+
+\begin{itemize}
+	\item \textbf{Cifratura}:\\
+	$c=m^e$ mod $n$\\
+	Dove $m$ ed $e$ fanno parte della chiave pubblica. Se la lunghezza del messaggio $m$ da cifrare ha una dimensione più grande di $n$ dev'essere diviso in blocchi.
+	\item \textbf{Decifratura}:\\
+	$c^d$ mod $n = m$\\
+	Essa funziona in questo modo:
+	\begin{equation*}
+		c^d \text{ mod } n \equiv (m^e)^d \equiv m^{ed} \text { mod } n
+	\end{equation*}
+	Ora, siccome $ed\equiv 1$ mod $\phi(n)$, per definizione di congruenza esiste una $k$ intera tale per cui $ed = 1 + k\phi(n)$, da cui:
+	\begin{equation*}
+		c^d \text{ mod } n \equiv m^{1+k\phi(n)} \equiv m \cdot (m^{\phi(n)})^k \text { mod } n
+	\end{equation*}
+Per il piccolo teorema di Fermat sappiamo che $m^{\phi(n)} \equiv 1$ mod $n$, quindi:
+\begin{equation*}
+	c^d \text{ mod } n \equiv m \cdot (1)^k \equiv m \cdot 1 \equiv m \text{ mod } n
+\end{equation*}
+	
+\end{itemize}
+Si sfrutta quindi l'esponenziazione modulare che è una permutazione one-way (la trapdoor è la chiave segreta).
+
+\subsubsection*{Esempio}
+Bob sceglie $p=101$ e $q=113$, da cui $n_B=pq=11413$ e $\phi(n_B) = (p-1)(q-1) = 11200$.\\
+Ora deve scelgliere una $d_b$ fra 2 e $\phi(n_B) - 1 =11199$ tale che l'MCD fra $d_B$ e $\phi(n_B)$ sia uguale a 1.\\
+Mettiamo che scelga $d_B=6597$.\\
+Usando l'algoritmo di Euclude esteso, Bob si calcola
+\begin{equation*}
+	e_B \equiv d_B^{-1} \text{ mod } \phi(n_B) = 3533 \text { mod } 11200
+\end{equation*}
+Quindi la chiave pubblica è data dalla coppia $(n_B, e_B) = (11413, 3533)$,\\
+la chiave privata è $d_B=6597$.\\
+
+Se Alice volesse mandare il messaggio $m=9726$ e Bob, allora si calcola $c=9726^{3533}$ mod 11414 = 5761 e manda $c$ a Bob.\\
+Egli recupera $m$ calcolando:
+\begin{equation*}
+	c^{d_B} = 5761^{6597} \text{ mod } 11413 = 9726
+\end{equation*}
+
+Ovviamente nella realtà le dimensioni dei numeri sono di almeno 1024 bit.
+
+min 25
+
+
 
 
 
