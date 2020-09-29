@@ -133,12 +133,12 @@ Vediamo ora passo passo:
 		\State $j=0$
 		\For {$i = 0$ to 255}
 		\State $j = (j + S[i] + T[i])$ mod 256
-		\State \textbf{swap}($S[i]], S[j]$)
+		\State \textbf{swap}($S[i], S[j]$)
 		\EndFor
 	\end{algorithmic}
 
 	\item Generazione del keystream:\\
-	Si parte da $S[0]$ e si arriva a $S[255]$, poi di nuovo da $S[0]$ e così via. Ad ongi interazione l'elemento $S[i]$ è cambiato con un altro elemento $S[j]$, dove il valore $j$ dipende da $S[i]$. La somma $S[i]+S[j]$ (mod 256) da la posizione dell'elemento $z$
+	Si parte da $S[0]$ e si arriva a $S[255]$, poi di nuovo da $S[0]$ e così via. Ad ogni interazione l'elemento $S[i]$ è cambiato con un altro elemento $S[j]$, dove il valore $j$ dipende da $S[i]$. La somma $S[i]+S[j]$ (mod 256) da la posizione dell'elemento $z$
 	
 	\medskip
 	
