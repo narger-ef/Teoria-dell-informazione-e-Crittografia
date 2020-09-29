@@ -33,7 +33,7 @@ Per semplicità vediamo solo AES-128, ma gli altri cambiano solo su pochi dettag
 		\end{enumerate} 
 		
 	Come si generano le chiavi derivate? Spieghiamo per AES-128.
-	Bisogna ottenere 11 chiavi, ognuna di 16 bytes. L'algoritmo lavora su parole di 4 byter, quindi dobbiamo ottenere 44 parole che inseriamo in un array $w[0,..43]$. Si definiscono 10 costanti $Rcon[1]$, $Rcon[2]$, ..., $Rcon[10]$. Successivamente si segue questo pseudocodice:
+	Bisogna ottenere 11 chiavi, ognuna di 16 bytes. L'algoritmo lavora su parole di 4 bytes, quindi dobbiamo ottenere 44 parole che inseriamo in un array $w[0,..43]$. Si definiscono 10 costanti $Rcon[1]$, $Rcon[2]$, ..., $Rcon[10]$. Successivamente si segue questo pseudocodice:
 	
 		\begin{figure}[h]
 		\centering
@@ -43,7 +43,7 @@ Per semplicità vediamo solo AES-128, ma gli altri cambiano solo su pochi dettag
 \subsection*{Crittosistemi simmetrici}
 \addcontentsline{toc}{subsection}{Crittosistemi simmetrici}
 
-Abbiamo una sequenza di testi di in chiaro $m_1, m_2, ...$ di testi in chiaro e una chiave iniziale $k$, vogliamo avere una sequenza di testi cifrati $c_1, c_2,...$.\\
+Abbiamo una sequenza di testi di in chiaro $m_1, m_2, ...$ e una chiave iniziale $k$, vogliamo avere una sequenza di testi cifrati $c_1, c_2,...$.\\
 \textbf{Modi di operazione}: 
 \begin{itemize}
 	\item ECB (Electronic CodeBook)\\
