@@ -64,7 +64,7 @@ Effettua una concatenazione con quello che è successo in precedenza. In partico
 	\centering
 	\includegraphics[width=0.5\linewidth]{immagini/img39}
 \end{figure}
-Viene prodotta una sequenza di chiavi derivate, che vengono utilizzare per effettuare la cifratura. In pratica cifro $m_1$ facendo lo xor con $z_1$ e così via. L'idea è fare lo xor con dei bit casuali per ottenere un risultato casuale. Perto da $z_0$ che trovo in maniera casuale. Se $E_k$ è fatto bene lo posso usare come generatore di numeri casuali.
+Viene prodotta una sequenza di chiavi derivate, che vengono utilizzate per effettuare la cifratura. In pratica cifro $m_1$ facendo lo xor con $z_1$ e così via. L'idea è fare lo xor con dei bit casuali per ottenere un risultato casuale. Parto da $z_0$ che trovo in maniera casuale. Se $E_k$ è fatto bene lo posso usare come generatore di numeri casuali.
 Questo modo è molto veloce in quanto fa solo lo xor con le chiavi derivate (es guardo un video in HD). \'E affidabile anche in canali rumorosi in quanto l'aver perso un blocco $m_i$ non pregiudica quello successivo. Però è vulnerabile ad un attacco che modifica lo stream. (es. se si parla di cifre, prezzi, posso invertire un numero).
 \item CFB (Cipher FeedBack)\\
 \begin{figure}[h]
