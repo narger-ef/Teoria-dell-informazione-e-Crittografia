@@ -2,7 +2,7 @@
 \addcontentsline{toc}{section}{Lezione 19}
 
 \subsection*{Generatori di numeri pseudo-casuali}
-Tanti algoritmi crittografici hanno bisogno tanti bit casuali, in natura si possono trovare ma recuperarli è molto dispendioso. Utilizziamo quindi dei generatori di numeri pseudo-casuali. Essi funzionano così: dato un seme (seed) casuale, un PRNG (Pseudo-Random Number Generator) produce una sequenza di bit che è indistinguibile da una vera sequenza di bit casuali. Indistinguibile significa che nessun algoritmo (che può esssere eseguito in tempo polinomiale) può decidere se la sequenze è casuale o meno.
+Tanti algoritmi crittografici hanno bisogno di tanti bit casuali, in natura si possono trovare ma recuperarli è molto dispendioso. Utilizziamo quindi dei generatori di numeri pseudo-casuali. Essi funzionano così: dato un seme (seed) casuale, un PRNG (Pseudo-Random Number Generator) produce una sequenza di bit che è indistinguibile da una vera sequenza di bit casuali. Indistinguibile significa che nessun algoritmo (che può esssere eseguito in tempo polinomiale) può decidere se la sequenze è casuale o meno.
 
 Un generatore di numeri casuali è un algoritmo che, dati $k$ bit in input di seme casuale, ritorna $l(k) > $ bit, tale per cui:
 \begin{itemize}
@@ -40,7 +40,7 @@ x_3 \equiv ax_2 + b \text{ mod } m
 \end{cases}
 \]
 
-Se abbimao un PRNG $H: \{0,1\}^k \rightarrow \{0,1\}^{k+1}$, allora possiamo produrre un qualsiasi altro PRNH $G:\{0,1\}^k \rightarrow \{0,1\}^{l(k)}$ in questo modo:
+Se abbiamo un PRNG $H: \{0,1\}^k \rightarrow \{0,1\}^{k+1}$, allora possiamo produrre un qualsiasi altro PRNG $H:\{0,1\}^k \rightarrow \{0,1\}^{l(k)}$ in questo modo:
 
 \begin{align*}
 G(x_0)\\
@@ -63,7 +63,7 @@ L'hard-core bit può essere visto come l'output di un predicato hard-core. Presa
 
 Se la probabilità di indovinare l'hard-core bit non si discosta di molto da $\frac12$ allora l'attaccante non sta capendo niente.
 
-Usando $f$ e $B$ possiamo costruire un PRNH $H:\{0,1\}^k \rightarrow \{0,1\}^{k+1}$ come segue:
+Usando $f$ e $B$ possiamo costruire un PRNG $H:\{0,1\}^k \rightarrow \{0,1\}^{k+1}$ come segue:
 \begin{equation*}
 H(X) = f(x) || B(x)
 \end{equation*}
@@ -95,7 +95,7 @@ Ma ci chiediamo, come facciamo a dimostrare se un algoritmo è un buon generator
 Dal punto di vista teorico c'è un test universale che formalizza la nozione di \textit{impredicibilità}.
 Data una funzione $G:\{0,1\}^n \rightarrow \{0,1\}^{l(k)}$. $G$ è impredicibile se e solo se $\forall i \in \{1,2,..,l(k)\}$, $\forall$ polinomi $p$, e $\forall$ algoritmi $A$, $\exists k_{A,p}$ tale che $\forall k \geq k_{A,p}:$
 \begin{equation*}
-Prob[x \leftarrow \{0,1\}^k; (\sigma_1, ...\sigma_{l(k)} = G(x); \sigma^{\text{new}}_i \leftarrow A(\sigma_1,...\sigma_{i-1}) : \sigma^{\text{new}}_i = \sigma_i] \leq \frac12 + frac1{p(k)}
+Prob[x \leftarrow \{0,1\}^k; (\sigma_1, ...\sigma_{l(k)} = G(x); \sigma^{\text{new}}_i \leftarrow A(\sigma_1,...\sigma_{i-1}) : \sigma^{\text{new}}_i = \sigma_i] \leq \frac12 + \frac1{p(k)}
 \end{equation*}
 
 In altre parole do i primi $i-1$ elementi all'algoritmo $A$ dell'attaccante e vedo se riesce a prevedere l'ultimo bit $\sigma_i^\text{new}$. Se questa probabilità tende a $\frac12$ allora l'output di $G$ è impredicibile.
