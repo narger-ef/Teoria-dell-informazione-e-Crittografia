@@ -83,8 +83,14 @@ Un esempio di fattorizzazione:\\
 
 
 
-RSA-768=1230186684530117755130494958384962720772853569595334792197322452151726400507263657518745202199786469389956474942774063845925192557326303453731548268
-507917026122142913461670429214311602221240479274737794080665351419597459856902143413 = 33478071698956898786044169848212690817704794983713768568912431388982883793878002287614711652531743087737814467999489 × 36746043666799590428244633799627952632279158164343087642676032283815739666511279233373417143396810270092798736308917
+RSA-768=12301866845301177551304949583849627207728535695953347921973224521\\
+517264005072636575187452021997864693899564749427740638459251925573263034\\
+537315482685079170261221429134616704292143116022212404792747377940806653\\
+51419597459856902143413 = \\
+334780716989568987860441698482126908177047949837137685689124313889828837\\
+93878002287614711652531743087737814467999489 × 3674604366679959042824463\\
+37996279526322791581643430876426760322838157396665112792333734171433968\\
+10270092798736308917
 
 
 L'algoritmo "banale" è quello che prova a dividere $n$ dato in input per tutti gli interi da 2 a $\sqrt{n}$, ma che equivale a un tempo di:
@@ -134,10 +140,10 @@ La decifratura funziona in questo modo:
 \delta = m \cdot (g^a)^{\ell} \text{ mod } q.
 \end{equation*}
 \begin{equation*}
-m \cdot g^{-a\ell} \cdot \delta
+m = g^{-a\ell} \cdot \delta
 \end{equation*}
 \begin{equation*}
-	m \cdot g^{-a\ell} \cdot \delta = \gamma^{-a} \cdot \delta = \gamma^{q-1-a} \cdot \delta
+	m = g^{-a\ell} \cdot \delta = \gamma^{-a} \cdot \delta = \gamma^{q-1-a} \cdot \delta
 \end{equation*}
 
 Eve, come prima, dovrebbe risolvere un logaritmo discreto per rompere il crittosistema.
@@ -220,7 +226,7 @@ I valori di $p$ e $q$ non dovrebbero essere troppo vicini fra loro (altrimenti s
 Vediamo un caso in cui $p$ e $q$ sono vicini:
 \begin{itemize}
 	\item Assumiamo che $p>q$
-	\item Se i due sono vicini, allora $frac{p-q}{2}$ è piccolo, e $\frac{p+q}{2}$ è leggermente più grande di $\sqrt{n}$.
+	\item Se i due sono vicini, allora $\frac{p-q}{2}$ è piccolo, e $\frac{p+q}{2}$ è leggermente più grande di $\sqrt{n}$.
 	\item Dalla sequenze uguaglianza (che è valida in generale):
 	\begin{equation*}
 		\frac{(p+q)^2}{4} - n = \frac{(p-q)^2}{4}
