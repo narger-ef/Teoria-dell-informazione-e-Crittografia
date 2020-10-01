@@ -1,0 +1,166 @@
+\section*{Lezione 22}
+\addcontentsline{toc}{section}{Lezione 22}
+
+Vogliamo capire qual è la probabilità di successo di FindCollision, proviamo a riscriverlo in maniera più facile da analizzare:
+
+\medskip
+\begin{algorithmic}
+	\State {Scegli a caso $X_0 \subseteq X$, con $|X_0| = q$}
+	\State {fingerprints = []}
+	\ForAll{$x \in X_0$}
+	\State {Calcola $y_x = h(x)$}
+	\EndFor
+	\If {$y_x \in$ fingerprints}
+	\Return {$(x,x')$}
+	\Else { add $y_x$ to fingerprints}
+	\EndIf
+	\Return {"Fail"}
+\end{algorithmic}
+
+Teorema: diciamo che $M = |Y|$ (insieme delle possibili impronte). La probabilità di successo $\epsilon$ di FindCollision è 
+\begin{equation*}
+	\epsilon = 1 - (\frac{M-1}{M})(\frac{M-2}{M})...(\frac{M-q}{M})
+\end{equation*}
+
+Dimostrazione: dato $X_0 = \{x_1, ..., x_q\}$, per ogni $i$ compresa in $0 < i \geq q$ si definisce $E_i$ l'evento $h(x_i) \notin \{h(x_1), ..., h(x_{i-1})\}$, allora Prob[$E_1$] = 1, e le altre:
+\begin{equation*}
+	\text{Prob}[E_1 \land E_2 \land ... \land E_q] = (\frac{M-1}{M})(\frac{M-2}{M})...(\frac{M-q+q}{M})
+\end{equation*}
+Questa è la probabilità che fallisca, quindi la $\epsilon$ sopra è quella che abbia succcesso.
+
+\subsubsection*{Il paradosso del compleanno}
+
+Riscrivo la probabilità di non avere collisioni come:
+
+\begin{equation*}
+	(1 - \frac1M)(1 - \frac2M) ... (1 - \frac{q-1}{M}) = \prod_{i=1}^{q-1}(1 - \frac{i}{M})
+\end{equation*}
+
+Ora approssimiamo $1-x \approx e^{-x}$ , quindi
+\begin{equation*}
+	\text{Prob[NoCollisions]} \approx e^{-\frac{i}{M}} = e^{-\frac1M \sum_{i=1}{q-1}i} = e^{-\frac{q(q-1)}{2M}}
+\end{equation*}
+quindi la probabilità di trovare (almeno) una collisione è
+\begin{equation*}
+	\text{Prob[AtLeastOneCollision]} \approx 1 - e^{-\frac{q(q-1)}{2M}} = \epsilon
+\end{equation*}
+
+
+Questa relazione lega: probabilità di avere una collisioni ($\epsilon$), numero di possibili impronte($M$) e lo "sforzo" computazionale (numero di query) che siamo disposti a fare ($q$) nel cercare una collisione.\\
+
+Ora proviamo ad estrarre lo sforzo computazionale:
+
+\begin{equation*}
+	e^{-\frac{q(q-1)}{2M}} = 1 - \epsilon
+\end{equation*}
+
+\begin{equation*}
+	-\frac{q(q-1)}{2M} = ln(1-e)
+\end{equation*}
+
+\begin{equation*}
+	q^2 - q = 2M ln(\frac{1}{1-\epsilon})
+\end{equation*}
+
+\begin{equation*}
+	q \approx \sqrt{2Mln(\frac{1}{1-\epsilon})}
+\end{equation*}
+
+Quindi questo valore rappresenta (circa) il numero di query che devo fare per trovare almeno una collisione con probabilità $\epsilon$ che ha $M$ possibili impronte.
+
+Proviamo $\epsilon= \frac12$:
+\begin{equation*}
+	q \approx \sqrt{2Mln2}
+\end{equation*}
+\begin{equation*}
+	q \approx 1.17\sqrt{M}
+\end{equation*}
+
+Quindi le hash di circa $\sqrt{M}$ elementi abbiamo una collisione con probabilità $\frac12$.\\
+
+
+Con 40 bit di impronta abbiamo $M=2^{40} \rightarrow \sqrt{M} = 2^{20} \approx 10^6$ (Non sicuro! 1 milione li provo in tra).
+
+
+Con 128 bit di impronta abbiamo $M=2^{128} \rightarrow \sqrt{M} = 2^{64} \approx 10^6$ (Sicuro per poco tempo).
+
+Di solito si utilizzano \textit{almeno} 160 bit.\\
+
+Questa è la stessa cosa di chiedersi quante persone servono per avere la probabilità $\frac12$ che due di loro siano nate nello stesso giorno:
+
+\begin{equation*}
+\sqrt{365} \cdot 1.17 \approx 23 \text{ lol}
+\end{equation*}
+
+\subsubsection*{Costruzione di funzioni di hash iterate}
+
+Data una funzione di compressione $\{0,1\}^{m+t} \rightarrow \{0,1\}^m$ con $t \geq 1$
+
+Le tecnica è composta da tre fasi:
+\begin{itemize}
+	\item \textbf{Pre-computazione}\\
+	Data una stringa in input $x$ che ha lunghezza almeno $m+t+1$, creiamo una stringa $y$ tale per cui $|y| \equiv 0 $ mod $t$ (quindi che abbia lunghezza multiplo di $t$).\\
+	Di solito si usa una funzione di padding $pad(x)$ che aggiunge bit alla fine uguali a zero, poi dividiamo $y$ in $r$ blocchi, ognuno di $t$ bit:
+	\begin{equation*}
+		y = y_1 || y_2 || ... || y_r
+	\end{equation*}
+Questa fase di pre-computazione dovrebbe assicurare che la funzione $f(x) = y$ computata sia la più vicina possibile ad una iniettiva (input diversi hanno output diversi) se no è più facile trovare collisioni. 
+Questa condizione non è difficile da soddifare in quanto $|y| = rt \geq |x|$.
+
+\item \textbf{Computazione}:\\
+Definiamo un vettore di inizializzazione $z_0 = IV$ (IV = Initialization Vector) che di solito è noto.
+\begin{equation*}
+	z_0 = IV
+\end{equation*}
+\begin{equation*}
+	z_1 = compress(z_0 || y_1)
+\end{equation*}
+\begin{equation*}
+	z_2 = compress(z_1 || y_2)
+\end{equation*}
+\begin{center}
+	...
+\end{center}
+\begin{equation*}
+	z_r = compress(z_{r-1} || y_r)
+\end{equation*}
+
+\item \textbf{Trasformazione output}:\\
+Si trasforma l'output (opzionale)
+\end{itemize}
+
+Questa costruzione generale è stata specializzata da Merkle e Damgard in due modi.\\
+Con questa costruzione possiamo dimostrare che se la funzione \textit{comprimi} è resistente alle collisioni allora anche la funzione \textit{hash} iterata è resistente alle collisioni.\\
+
+
+Si prende un input $x$ di lunghezza $n$, con $|x| = n \geq m + t +1$ per $t \geq 2$. Si divide $x$ in $k$ blocchi, ognuno di $t-1$ bits:
+\begin{equation*}
+	x = x_1 || x_2 || ... || x_k
+\end{equation*}
+
+con $k= [\frac{n}{t-1}]$ e $|x_k| = t - 1 - d$ con $0 \leq d \leq t -2$ ($d$ sarebbe la lunghezza del pezzo che manca per creare padding, si aggiungono tanti 0).
+
+Si aggiunge un blocco in $k+1$ che contiene il valore del numero $d$ (così so quanti 0 ho aggiunto per padding).
+
+mhhh
+
+\subsubsection*{Alcune funzioni di Hash}
+
+La prima funzione di hash è stata MD4 nel 1990, MD5 è una modifica di MD4 che è più resistente agli attacchi. Però queste versioni sono suscettibili all'attacco del compleanno.\\
+Viene introdotto SHA come standard, che poi diventa SHA-1 dopo aver corretto una falla.
+Anche in SHA-1 però è stata trovata una collisione, quindi ora bisogna usare SHA-256.\\
+
+SHA-1 
+non chiesto all'orale come funziona
+
+
+\subsection*{Digital Signature Algorithm}
+\addcontentsline{toc}{subsection}{Digital Signature Algorithm}
+
+\'E stato preso El Gamal e sono state effettuate alcune modifiche.
+
+"i dettagli non ve li chiedo all'orale"
+
+=)
+
+min2s

@@ -50,4 +50,143 @@ A questo punto Bob vuole verificare la firma prodotta da Alice:
 	\item Prende l'algoritmo $ver_k$ e accetta la valida se e solo se $ver_k(m, \sigma) = T$.
 \end{itemize}
 
-min 22
+Eve vorrebbe:
+\begin{itemize}
+	\item Rompere totalmente il sistema: in qualche modo riesce a determinare la chiave segreta $k$ e quindi firmare documenti al suo posto
+	\item Existential forgery: dopo aver osservato qualche coppia $(x_1, y_1), ..., (x_i, y_i)$ di messaggi con le rispettive firme, quando un nuovo messaggio arriva Eve può produrre una valida firma (valida solo per quel messaggio o per una classe di messaggi che hanno qualche similarità).
+\end{itemize}
+
+Quando Alice vuole mandare un messaggio firmato $m$ (non cifrato, solo firmato) a Bob, lei ha una funzione di cifratura $E_A$ e una funzione di decifratura $D_A$. Mantiene segreta $D_A$ mentre $E_A$ è pubblica.\\
+A questo punto se vuole firmare $m$ usa $D_A(m)$ e la manda a Bob. Egli per verificare la firma prende l'algoritmo pubblico $E_A$ e controlla che \begin{equation*}
+	E_A(D_A(m)) = m
+\end{equation*}
+E accetta la firma se e solo se la funzione di verifica ritorna vero.
+
+Di solito però si firma un documento cifrato, quindi Alice calcola $D_A(E_B(m))$ utilizzando $E_B$ come algoritmo di cifratura pubblico di Bob. \\
+Bob infine per trovare $m$ calcolerà:
+\begin{equation*}
+	D_B(E_A(D_A(E_B(m)))) = m
+\end{equation*}
+Quindi controlla la firma e poi decifra il messaggio.\\
+
+
+Così però non va bene: se Eve intercettasse potrebbe prendere la firma e impersonificare Alice mandando $D_E(E_B(m))$. Quindi è meglio cifrare anche la firma, così solo Bob può leggere la firma.
+
+\subsection*{Schema El Gamal}
+\addcontentsline{toc}{subsection}{Schema El Gamal}
+
+La base su cui è stato prodotto DSA (Digital Signature Algorithm) che è algoritmo usato ora.\\
+Lo schema di El-Gamal non è deterministico: ogni messaggio (anche uguale) ha sempre una firma diversa. Come il suo crittosistema, la sicurezza si basa sui logaritmi discreti.
+\begin{itemize}
+	\item Si parte da un numero primo $p$
+	\item Si trova un generatore $g$ del generatore del gruppo ciclico $\mathbb{Z}_p^*$
+	\item I messaggi da cifrare sono elementi di $\mathbb{Z}_p^*$
+	\item Le firme sono coppie $(\gamma, \delta)$ con $\gamma \in \mathbb{Z}_p^*$ e $\delta \in \mathbb{Z}_{p-1}$ dove $\mathbb{Z}_{p-1}$ non sarà un campo ($p-1$ è pari) ma un anello o boh 
+\end{itemize}
+
+Il problema, come nel crittosistema, la cifra digitale del messaggio è grande circa il doppio del messaggio cifrato.\\
+
+La chiave segreta sarà $a$, con $0<a<p-1$, Alice calcola $\beta=g^a$ mod $p$.\\
+La chiave pubblica è la tripla $(p, g, \beta)$ (gruppo ciclico, generatore e versione nascosta della chiave segreta).\\
+Per firmare $m$ sceglie una $k \in \mathbb{Z}_{p-1}^*$, calcola $\gamma=g^k$ mod $p$ e $\delta = (m-a\gamma)k^{-1}$ mod $p-1$.\\
+La coppia $(\gamma, \delta)$ è la firma di $m$.\\
+
+Per ottenere $m$, mi basta fare le sostituzioni:
+\begin{equation*}
+	m = a\gamma + k\delta \text{ mod } p-1
+\end{equation*}
+
+Bob accetta la firma se e solo se:
+\begin{equation*}
+	\beta^\gamma \gamma^\delta \equiv g^m \text{ mod } p
+\end{equation*}
+
+Infatti se la firma è stata effettuata correttamente allora
+\begin{equation*}
+	\beta^\gamma \gamma^\delta \equiv g^{a \gamma} \cdot g^{k\delta} \equiv g^m \text{ mod } p
+\end{equation*}
+
+Mettiamo che Eve voglia produrre una firma per un messaggio $m$ senza conoscere il valore di $a$. Se Eve sceglie $\gamma$ e vuole calcolare il valore di $\delta$ in modo tale da rendere vera $\beta^\gamma \gamma^\delta \equiv g^m \text{ mod } p$. Il problema è che per farlo deve calcolarsi il seguente logaritmo discreto:
+\begin{equation*}
+	log_{\gamma}(g^m \beta^{-\gamma})
+\end{equation*}
+
+Invece se sceglie $\delta$ e vuole computare $\gamma$, deve risolvere l'equazione $\beta^{\gamma} \cdot \gamma^{\delta} \equiv ^m$ mod $p$ rispetto a $\gamma$ ma è infattibile anche questo problema.
+
+Infine se sceglie sia $\gamma$ che $\delta$ e vuole calcolarsi un valore per $m$, deve calcolare il logaritmo discreto $\log_g\beta^{\gamma} \cdot \gamma^\delta$.
+
+Il problema è che Eve può calcolare $\gamma, \delta$ e $m$ contemporaneamente!
+
+(procedimento sbatti)
+
+Però è possibile calcolare un messaggio $m$ e verificare che $(\gamma, \delta)$ sia una firma valida.
+Quindi questo schema non è completamente rotto nel senso di aver trovato la chiave segreta, però così Eve può calcolare messaggi e firme.
+
+Il problema è che la firma diventa troppo grande e in più El Gamal ha questa falla.
+
+Sarebbe bello se avessimo una funzione che prende in input un messaggio di lunghezza arbitraria e ritorni un piccolo output in one-way.
+Soluzione: funzioni Hash!
+A questo punto anzichè firmare il messaggio firmo l'impronta hash del messaggio e non ho più il problema della dimensione visto che viene il doppio non più del messaggio.\\
+
+Questo previene anche l'attacco al El Gamal visto che posso calcolare i valori di $\gamma, \delta$ e $m$, ma non so qual è il messaggio che produce quell'impronta ($m$)!
+
+\subsection*{Funzioni di Hash}
+\addcontentsline{toc}{subsection}{Funzioni di Hash}
+Esse calcolano un'impronta (o message digest) per un dato in input.
+Questa è piccola e di solito ha una lunghezza fissa (128 bit per MD5, 160 bit per SHA-1, 256 bit per SHA-256).
+Possono essere usate per verificare l'integrità di un messaggio trasmesso.
+
+Definizione: una famiglia di funzioni di hash è una quadrupla $(X,Y,K,H)$ dove:
+\begin{itemize}
+	\item $X$ è l'insieme dei possibili messaggi
+	\item $Y$ è l'insieme delle possibili impronte
+	\item $K$ è l'insieme delle possibili chiavi (noi non usiamo)
+	\item $H=\{h_k:X \rightarrow Y | k \in K\}$ è l'insieme delle funzioni hash
+\end{itemize}
+
+L'insieme $X$ dei messaggi può essere finito o infinito (molto molto grande), mentre l'insieme delle impronte $Y$ è sempre finito.
+Possiamo concludere che $|X| \geq |Y|$, anzi si assume che $|X| \geq 2|Y|$. In pratica è una funzione di compressione (da non confondere con archivi zip ecc).
+
+I tre problemi difficili da risolvere quando si parla di funzioni di hash:
+
+\begin{enumerate}
+	\item \textbf{Preimage:}\\
+	Input: funzione di hash $h : X \rightarrow Y$ e $y \in Y$\\
+	Output $x \in X$ tale che $h(x) = y$\\
+	
+	In pratica ci viene chiesto di invertire la funzione di hash, $h$ dev'essere quindi one-way (data l'impronta dev'essere difficile calcolare un input che la generi)
+	
+	\item \textbf{Second preimage:}\\
+	Input: funzione di hash $h : X\rightarrow Y$ e $x \in X$\\
+	Output:  $x' \in X$ tale che $x \neq x'$ e $h(x') = h(x)$\\
+	
+	In pratica dato un messaggio $x$, e la sua impronta calcolata tramite una funzione $h$ dev'essere difficile trovare un messaggio $x'$ che abbia lo stesso valore in output della funzione
+	
+	\item \textbf{Collision:}\\
+	Input: funzione di hash $h: X \rightarrow Y$\\
+	Output: $x, x' \in X$ tali che $x' \neq x$ e che $h(x') = h(x)$\\
+	
+	Dev'essere difficile trovare due $x$ che abbiano la stessa impronta (esempio ti mando un file $x$ e poi ti dico guarda che in realtà ti ho mandato $x'$).\\
+	Esso è più semplice da attaccare rispetto a second preimage, posso sempre provare ad attaccarlo.
+\end{enumerate}
+
+\subsubsection*{Algoritmo FindCollision}
+
+Osservazione: collision è più facile da attaccare rispetto a second preimage. L'algoritmo assume che possiamo valutare la funzione $h$ per $q$ volte
+
+\medskip
+\begin{algorithmic}
+	\State {Scegli a caso $X_0 \subseteq X$, con $|X_0| = q$}
+	\ForAll{$x \in X_0$}
+	\State {Calcola $y_x = h(x)$}
+	\EndFor
+	\If {$y_x = y_{x'}$ per qualche $x \neq x'$}
+	\Return {$(x,x')$}
+	\Else {}
+	\Return {"Fail"}
+	\EndIf
+\end{algorithmic}
+\medskip
+
+Da notare che l'algoritmo non è completamente deterministico (a causa della scelta casuale su $X_0$, se sono fortunato mi ritorna una coppia altrimenti un errore).
+
